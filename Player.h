@@ -10,6 +10,7 @@ private:
     int score;
 
 public:
+    Player(); // Default Constructor
     Player(const std::string& name);
     void loseLife();
     void gainLife();
