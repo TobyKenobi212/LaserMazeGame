@@ -1,4 +1,4 @@
-#include "player.h"
+#include "Player.h"
 using namespace std;
 
 Player::Player(const string& name) : username(name), lives(3), score(0) {}
