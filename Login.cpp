@@ -2,7 +2,7 @@
 using namespace std;
 
 LoginManager::LoginManager() {
-    // Pre-populate with some users for testing
+    // users for testing
     userDatabase.push_back({"user1", "password1"});
     userDatabase.push_back({"user2", "password2"});
 }
@@ -18,4 +18,17 @@ bool LoginManager::login(const string& username, const string& password) {
 
 void LoginManager::registerUser(const string& username, const string& password) {
     userDatabase.push_back({username, password});
+}
+
+istream& operator>>(istream& in, User& user) {
+    cout << "Enter username: ";
+    is >> user.username;
+    cout << "Enter password: ";
+    is >> user.password;
+    return is;
+}
+
+ostream& operator<<(ostream& out, const User& user) {
+    os << "Username: " << user.username << ", Password: " << user.password;
+    return os;
 }

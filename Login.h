@@ -3,10 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 struct User {
     std::string username;
     std::string password;
+
+    friend std::istream& operator>>(std::istream& in, User& user);
+    friend std::ostream& operator<<(std::ostream& out, const User& user);
 };
 
 class LoginManager {
