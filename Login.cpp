@@ -22,13 +22,13 @@ void LoginManager::registerUser(const string& username, const string& password) 
 
 istream& operator>>(istream& in, User& user) {
     cout << "Enter username: ";
-    is >> user.username;
+    in >> user.username;
     cout << "Enter password: ";
-    is >> user.password;
-    return is;
+    in >> user.password;
+    return in;
 }
 
 ostream& operator<<(ostream& out, const User& user) {
-    os << "Username: " << user.username << ", Password: " << user.password;
-    return os;
+    out << "Username: " << user.username << ", Password: " << user.password;
+    return out;
 }
