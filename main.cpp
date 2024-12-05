@@ -25,6 +25,7 @@ int main() {
                 cout << "Login failed. Please check your username and password.\n";
             }
         } else if (choice == 3) {
+            cout << "Exiting program...";
             break;
         } else {
             cout << "Invalid option. Please try again.\n";
