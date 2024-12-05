@@ -9,8 +9,8 @@ struct User {
     std::string username;
     std::string password;
 
-    friend std::istream& operator>>(std::istream& in, User& user);
-    friend std::ostream& operator<<(std::ostream& out, const User& user);
+    friend std::istream& operator>>(std::istream& is, User& user);
+    friend std::ostream& operator<<(std::ostream& os, const User& user);
 };
 
 class LoginManager {
@@ -21,6 +21,7 @@ public:
     LoginManager();
     bool login(const std::string& username, const std::string& password);
     void registerUser(const std::string& username, const std::string& password);
+    bool userExists(const std::string& username) const;
 };
 
 #endif // LOGIN_MANAGER_H
