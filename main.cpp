@@ -64,7 +64,7 @@ void showMainMenu() {
 void startGame() {
     int choice;
     cout << "\nSelect Difficulty\n";
-    cout << "1. Easy\n2. Medium\n3. Hard\nChoose an option: ";
+    cout << "1. Easy\n2. Medium\n3. Hard\n4. Go Back\nChoose an option: ";
     cin >> choice;
 
     if (choice == 1) {
@@ -73,6 +73,8 @@ void startGame() {
         selectLevel("Medium");
     } else if (choice == 3) {
         selectLevel("Hard");
+    } else if (choice == 4) {
+        showMainMenu();
     } else {
         cout << "Invalid option. Please try again.\n";
     }
