@@ -1,0 +1,102 @@
+/*
+    For Reading and understanding purpose, this will be the pseudocode code for the user menu
+*/
+
+
+//easy.txt
+7x7	
+1,2
+7,3
+7,7
+0,0
+5,4
+5,5
+1,6
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+
+
+//easyTemp.txt
+7x7	
+1,2
+7,3
+7,7
+0,0
+5,4
+5,5
+1,6
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+0,0
+
+
+// easyMaze File
+// 1) Grid size '7x7'	
+// 2) Laser beam 'b'
+// 3) Target #1 'o'
+// 4) Target #2 'o'
+// 5) Target #3 'o'
+// 6) Blockers #1 '#'
+// 7) Blockers #2 '#'
+// 8) Blockers #3 '#'
+// 9) Blockers #4 '#'
+// 10) Beam Splitters #1 '_' or '|'
+// 11) Beam Splitters #2 '_' or '|'
+// 12) Mirrors #1  '/' or '\'
+// 13) Mirrors #2  '/' or '\'
+// 14) Mirrors #3  '/' or '\'
+// 15) Mirrors #4  '/' or '\'
+// 16) Mirrors #5  '/' or '\'
+// 17) Mirrors #6  '/' or '\'
+
+
+- The first line indicates the size of the box
+- The second line indicates the laser beam (a.k.a. the 'b' sign in the figure above)
+- The third line, fourth line and fifth line indicate the target (a.k.a. the 'o' sign in the figure above)
+- The 6th to 9th line indicate the blockers (a.k.a the '#' sign in the figure above)
+- The 10th to 11th indicate the beam splitters (a.k.a the '_' or '|' sign)
+- The 12th to 17th indicate the mirrors (a.k.a the '/' or '\' sign)
+
+The user menu has 4 options for now:
+1. Place Mirror (/ or \)
+
+	This allow the user to pick either mirrors and put a a specific coordinate,
+	it checks for the max number of token of mirrors type, max is 6
+	Enter token type (/ or \ for mirror, _ or | for beam splitter): \
+	Enter coordinates (row,column): 1,3
+	Updated Maze Grid:
+	. b \ . . # .
+	. . . . . . .
+	. . . . . . .
+	. . . . . . .
+	. . . # # . .
+	. . . . . . .
+	. . o . . . o
+
+
+2. Place Beam Splitter (_ or |)
+	The same as the option 1, also checks for max number of beam splitters, max is 2
+	
+3. Reset Level
+	The default maze grid is easy.txt, and there is another temporary txt that named easyTemp.txt
+	whenever the user picks option 3, the easy.txt values would replaced the easyTemp.txt, meaning
+	the user would play that level again from beginning. 	
+
+
+4. Exit and save maze
+	This allows user to save the current existing maze grid with any mirrors or beam splitters added
+	to the original grid.
+
