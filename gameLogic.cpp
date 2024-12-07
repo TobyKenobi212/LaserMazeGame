@@ -1,4 +1,8 @@
-/*  laser beam: done 
+/*    
+    To test the file you would need to create "easy.txt" and "easyTemp.txt" and input both ONLY the coordinates
+    from the "Easy Layout and Directions.txt"
+    
+    laser beam: done 
     reflected laser: only for mirrors 
     user menu: only 4 options for now
               1. Place Mirror (/ or \)
