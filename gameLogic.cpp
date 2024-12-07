@@ -135,52 +135,52 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
                 break; // Stop at obstacles
             } else if (cell == '/') {
                 if (dx == -1 && dy == 0) { // Laser coming from above (Up -> Right)
+                    dx = 0; dy = 1; d = 3; // Reflect Up -> Right
                     // Clear any continuation of the laser path upward
                     int clearX = x - 1, clearY = y;
                     while (clearX >= 0 && grid[clearX][clearY] == '^') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
                         clearX--;
                     }
-                    dx = 0; dy = 1; d = 3; // Reflect Up -> Right
                 } else if (dx == 1 && dy == 0) { // Laser coming from below (Down -> Left)
+                    dx = 0; dy = -1; d = 2; // Reflect Down -> Left
                     // Clear any continuation of the laser path downward
                     int clearX = x + 1, clearY = y;
                     while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
                         clearX++;
                     }
-                    dx = 0; dy = -1; d = 2; // Reflect Down -> Left
                 } else if (dx == 0 && dy == -1) { // Laser coming from the left (Left -> Down)
+                    dx = 1; dy = 0; d = 1; // Reflect Left -> Down
                     // Clear any continuation of the laser path to the left
                     int clearX = x, clearY = y - 1;
                     while (clearY >= 0 && grid[clearX][clearY] == '<') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
                         clearY--;
                     }
-                    dx = 1; dy = 0; d = 1; // Reflect Left -> Down
                 } else if (dx == 0 && dy == 1) { // Laser coming from the right (Right -> Up)
+                    dx = -1; dy = 0; d = 0; // Reflect Right -> Up
                     // Clear any continuation of the laser path to the right
                     int clearX = x, clearY = y + 1;
                     while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
                         clearY++;
                     }
-                    dx = -1; dy = 0; d = 0; // Reflect Right -> Up
                 }
             } else if (cell == '\\') {
                 // Reflection rules for '\'
-                if (dx == -1 && dy == 0) { 
-                    // Clear any continuation of the laser path to the upper
+                if (dx == -1 && dy == 0) {       
                     dx = 0; dy = -1; d = 2; // Up -> Left
+                    // Clear any continuation of the laser path to the upper
                     int clearX = x - 1; int clearY = y;
                     while (clearX >= 0 && grid[clearX][clearY] == '^') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
                         clearX--;
                     }
                 }  
-                else if (dx == 1 && dy == 0) { 
-                    // Clear any continuation of the laser path to the below
+                else if (dx == 1 && dy == 0) {    
                     dx = 0; dy = 1; d = 3; // Down -> Right
+                    // Clear any continuation of the laser path to the below
                     int clearX = x + 1; int clearY = y;
                     while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
@@ -188,8 +188,8 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
                     }
                 } 
                 else if (dx == 0 && dy == -1) { 
-                    // Clear any continuation of the laser path to the left
                     dx = -1; dy = 0; d = 0; // Left -> Up
+                    // Clear any continuation of the laser path to the left
                     int clearX = x; int clearY = y - 1;
                     while (clearY >= 0 && grid[clearX][clearY] == '<') {
                         grid[clearX][clearY] = '.';  // Reset to empty cell
@@ -222,10 +222,6 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
         processLaser(laserX, laserY, dx, dy, d);
     }
 }
-
-
-
-
 
 // Function to extract coordinates from a string (e.g., "1,2" to x=1, y=2)
 void extractCoordinates(const string& input, int& x, int& y) {
