@@ -119,8 +119,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     // Validate the coordinates
     while (true) {
         string input;
-        cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
-        cin.ignore();  // Clear previous input to avoid any lingering data
+        cout << "Enter the row,column coordinates (0-6) where you want to place the token: ";
         cin >> input;  // Read the full line of input
 
         extractCoordinates(input, x, y);
