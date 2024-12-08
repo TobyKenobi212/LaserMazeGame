@@ -1,3 +1,11 @@
+/*
+    To use with map.txt
+    Still needs save/reset implementation
+
+
+
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
