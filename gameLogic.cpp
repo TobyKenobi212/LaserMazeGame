@@ -23,6 +23,8 @@
 #include <sstream>
 #include <string>
 #include <queue>
+#include <cstdlib> 
+#include <ctime>   
 
 using namespace std;
 
@@ -105,10 +107,11 @@ void writeGridToTempFile(const vector<vector<char>>& grid, const string& filenam
     outputFile.close();
 }
 
-void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
+vector<vector<bool>> shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
     int rows = grid.size();
     int cols = grid[0].size();
     vector<vector<bool>> visited(rows, vector<bool>(cols, false)); // Track visited cells
+    vector<vector<bool>> targetHit(rows, vector<bool>(cols, false)); // Track if targets are hit
     queue<pair<pair<int, int>, pair<int, int>>> q; // ((x, y), direction)
 
     // Laser starts shooting in all four directions (0: right, 1: down, 2: left, 3: up)
@@ -139,12 +142,25 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
         if (visited[x][y]) continue;
         visited[x][y] = true; // Mark the cell as visited
 
+        // Determine the laser's symbol
+        char directionSymbol = (dx == 0 && dy == 1) ? '>' :  // Right
+                               (dx == 1 && dy == 0) ? 'V' :  // Down
+                               (dx == 0 && dy == -1) ? '<' : // Left
+                               '^';                          // Up
+
         // Handle different grid elements
         if (grid[x][y] == '#' || grid[x][y] == 'b') {
             // Blocker stops the laser (laser doesn't move forward in this direction)
             continue;
         } else if (grid[x][y] == 'o') {
-            // Target accepts the laser (but laser continues in the same direction)
+            // Check if the target accepts the laser from this direction
+            if ((directionSymbol == 'V' && dx == 1) ||     // Laser coming from above
+                (directionSymbol == '^' && dx == -1) ||    // Laser coming from below
+                (directionSymbol == '>' && dy == 1) ||     // Laser coming from left
+                (directionSymbol == '<' && dy == -1)) {    // Laser coming from right
+                targetHit[x][y] = true; // Mark target as hit
+            }
+            continue; // Laser does not continue past the target
         } else if (grid[x][y] == '/') {
             // Forward slash mirror reflects the laser
             if (dx == -1 && dy == 0) {  // Laser is moving upward '^' (dx = -1)
@@ -222,7 +238,7 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
                     clearX++;
                 }
                 // Horizontal beam splitter splits horizontally
-                q.push({{x, y}, {dx, dy}}); // Keep the current direction
+                //q.push({{x, y}, {dx, dy}}); // Keep the current direction
                 q.push({{x, y}, {0, 1}});    // Split laser to the right
                 q.push({{x, y}, {0, -1}});   // Split laser to the left
             } else if (dx == -1 && dy == 0) {  // Laser is moving upward '^'
@@ -232,17 +248,39 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
                     clearX--;
                 }
                 // Horizontal beam splitter splits horizontally
-                q.push({{x, y}, {dx, dy}}); // Keep the current direction
+                //q.push({{x, y}, {dx, dy}}); // Keep the current direction
                 q.push({{x, y}, {0, 1}});    // Split laser to the right
                 q.push({{x, y}, {0, -1}});   // Split laser to the left
+            } else if (dx == 0 && dy == 1) { // Laser is moving right '>'
+                int clearX = x, clearY = y + 1;
+                while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY++;
+                }
+                q.push({{x, y}, {0, 1}}); // Reflect to the right '>'
+            } else if (dx == 0 && dy == -1) { // Laser is moving left '<'
+                int clearX = x, clearY = y - 1;
+                while (clearY >= 0 && grid[clearX][clearY] == '<') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY--;
+                }
+                q.push({{x, y}, {0, -1}});  // Reflect to left '<'
             }
-
             continue; // No more laser propagation in the current direction
         } else if (grid[x][y] == '|') {
-            // Vertical beam splitter splits vertically
-            q.push({{x, y}, {dx, dy}}); // Keep the current direction
-            q.push({{x, y}, {1, 0}});    // Split laser downward
-            q.push({{x, y}, {-1, 0}});   // Split laser upward
+            if (dx == 1 && dy == 0) { // Laser is moving downward 'V' 
+                // Vertical beam splitter splits vertically
+                //q.push({{x, y}, {dx, dy}}); // Keep the current direction
+                q.push({{x, y}, {1, 0}});    // Keep moving downward
+            } else if (dx == -1 && dy == 0) {  // Laser is moving upward '^'
+                q.push({{x, y}, {-1, 0}});   // Keep moving upward
+            } else if (dx == 0 && dy == 1) { // Laser is moving right '>'
+                q.push({{x, y}, {1, 0}});    // Split laser downward
+                q.push({{x, y}, {-1, 0}});   // Split laser upward
+            } else if (dx == 0 && dy == -1) { // Laser is moving left '<'
+                q.push({{x, y}, {1, 0}});    // Split laser downward
+                q.push({{x, y}, {-1, 0}});   // Split laser upward   
+            }
             continue; // No more laser propagation in the current direction
         }
 
@@ -254,6 +292,8 @@ void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
         // Continue the laser in the current direction
         q.push({{x, y}, {dx, dy}});
     }
+
+    return targetHit;
 }
 
 
@@ -383,7 +423,8 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
 
 
     // Check if the coordinates are valid
-    if (x <= 0 || y <= 0 || x > rows || y > cols) {
+    if (x <= 0 || y <= 0 || x > rows || y > cols && 
+        grid[x][y] == '#' && grid[x][y] == 'b' && grid[x][y] == 'o') {
         cout << "Invalid coordinates. Please try again." << endl;
         return;
     }
@@ -408,7 +449,7 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     }
 
     // Re-simulate the laser path
-    shootLaser(grid, laserX, laserY);
+    auto targetHit = shootLaser(grid, laserX, laserY);
 
     // Write the updated grid to the temporary file
     writeGridToTempFile(grid, "easyTemp.txt", mirrors, beamSplitters);
@@ -416,6 +457,45 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     // Display the updated maze grid
     cout << "Updated Maze Grid with Laser Path:" << endl;
     printGrid(grid);
+
+    // Initialize random seed
+    srand(static_cast<unsigned>(time(0)));
+
+    // Check if all targets are hit
+    bool allTargetsHit = true;
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            if (grid[i][j] == 'o' && !targetHit[i][j]) {
+                allTargetsHit = false;
+                break;
+            }
+        }
+    }
+
+    // Output the result
+    if (allTargetsHit) {
+        cout << "All targets hit! Level passed." << endl;
+        cout << "You can move to the next level or play again." << endl;
+    } else {
+        // List of motivational messages
+        vector<string> messages = {
+            "Are you sure about that?",
+            "Oh, I don't know about that...",
+            "Everyone makes mistakes, right?",
+            "Close, you are getting there.",
+            "Hmm, maybe double-check those mirrors?",
+            "Not quite there.",
+            "The laser disagrees with your strategy. Try again!",
+            "Nice one!",
+            "You're good at this!",
+            "Fantastic move!",
+            "Are you giving up yet?"
+        };
+
+        // Select a random message
+        int randomIndex = rand() % messages.size();
+        cout << messages[randomIndex] << endl;
+    }
 }
 
 
@@ -551,6 +631,4 @@ int main() {
 
     return 0;
 }
-
-
 
