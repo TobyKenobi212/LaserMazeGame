@@ -43,7 +43,7 @@ void scanTokens(const string& line, map<char, int>& tokenInventory);
 void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory);
 
 // Coordinate extraction prototype
-void extractCoordinates(const string& input, int& x, int& y);
+bool extractCoordinates(const string& input, int& x, int& y);
 
 
 
@@ -122,7 +122,11 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
         cout << "Enter the row,column coordinates (0-6) where you want to place the token: ";
         cin >> input;  // Read the full line of input
 
-        extractCoordinates(input, x, y);
+        if (!extractCoordinates(input, x, y))
+        {
+            cout << "Error: Invalid coordinate format!" << endl;
+            continue;
+        }
 
         // Validate the range of coordinates
         if (x < 0 || x > 6 || y < 0 || y > 6) {
@@ -151,25 +155,24 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     // Place the token and update the inventory
     grid[x][y] = token;
     tokenInventory[token]--;
+
 }
 
 // Function to extract user inputted coordinates
-void extractCoordinates(const string& input, int& x, int& y) {
+bool extractCoordinates(const string& input, int& x, int& y) 
+{
     stringstream ss(input);
     char comma;
     // Check for comma-separated coordinates
     if (ss >> x >> comma >> y) {
-        return;  // Successfully extracted coordinates
+        return true;  // Successfully extracted coordinates
     } 
     // Check for space-separated coordinates (for / and _ mirrors)
     else {
-        stringstream ss2(input);
-        if (ss2 >> x >> y) {
-            return;
+            return false;
         }
-    }
-    cerr << "Error: Invalid coordinate format!" << endl;
 }
+
 
 
 // Function to spawn the beam rightwards
