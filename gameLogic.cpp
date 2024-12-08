@@ -497,6 +497,7 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
             "Nice one!",
             "You're good at this!",
             "Fantastic move!",
+            "Show me your motivation.",
             "Are you giving up yet?"
         };
 
