@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <map>  // To track token inventory
+#include <limits>
+#include <sstream>
 
 using namespace std;
 
@@ -39,6 +41,9 @@ void scanTokens(const string& line, map<char, int>& tokenInventory);
 
 // Token placement prototype
 void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory);
+
+// Coordinate extraction prototype
+void extractCoordinates(const string& input, int& x, int& y);
 
 
 
@@ -71,73 +76,100 @@ bool isTarget(char cell)
 }
 
 // Function to prompt the user for a token and coordinates, then place the token
-void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory)
-{
+void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory) {
     char token;
     int x, y;
 
-    // List of available tokens
-    cout << "Available tokens: / \\ | _" << endl;
-    cout << "Your current inventory:" << endl;
+    // Display available tokens
+    cout << "Available tokens: ";
     for (auto& item : tokenInventory) {
-        cout << item.first << ": " << item.second << endl;
+        for (int i = 0; i < item.second; ++i) {
+            cout << item.first << " ";  // Print each token based on its count
+        }
     }
+    cout << endl;
 
-    cout << "Enter the token you want to place: ";
-    cin >> token;
-
-// Validate the token input
-    while (true) 
-    {
-        // Check if the token exists in the inventory
-       
-        // Check if the token is one of the valid options
-        if (token != '/' && token != '\\' && token != '|' && token != '_') 
-        {
-            cout << "Invalid token. Available tokens are: / \\ | _" << endl;    
-        }
-         else if (tokenInventory[token] <= 0) 
-        {
-            cout << "You don't have this token in your inventory." << endl;
-        }
-        else 
-        {
-            // Token is valid and available in inventory
-            break;  // Exit the loop
-        }
-        
-        // Prompt user to re-enter token
-        cout << "Enter the token you want to place: ";
+    while (true) {
+        cout << "\nEnter the token you want to place: ";
         cin >> token;
+
+        // Clear the input buffer to remove any leftover characters
+        if (cin.peek() != '\n') {
+            cout << "Invalid token type. Please enter a single character only." << endl;
+            cin.clear();                   // Clear error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            continue;
+        }
+
+        // Validate the token type
+        if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
+            cout << "Invalid token type. Please choose /, \\ , _, or |." << endl;
+            continue;
+        } 
+        else if (tokenInventory[token] <= 0) {
+            cout << "You don't have this token in your inventory." << endl;
+            continue;
+        } 
+        else {
+            // Token is valid and available
+            break;
+        }
     }
 
+    // Validate the coordinates
+    while (true) {
+        string input;
+        cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
+        cin.ignore();  // Clear previous input to avoid any lingering data
+        cin >> input;  // Read the full line of input
 
-    // Get the coordinates from the user in x,y format
-    cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
-    cin >> x;
-    cin.ignore(); // To ignore the ',' separator
-    cin >> y;
+        extractCoordinates(input, x, y);
 
-    // Validate the coordinates input
-    while (x < 0 || x > 6 || y < 0 || y > 6 || (x == bRow && y == bCol))
-    {
-        if (x < 0 || x > 6 || y < 0 || y > 6)
-        {
-            cout << "Invalid coordinates. Please enter values between 0 and 6." << endl;
-        }
-        else if (x == bRow && y == bCol)
-        {
+        // Validate the range of coordinates
+        if (x < 0 || x > 6 || y < 0 || y > 6) {
+            cout << "Invalid input. Coordinates must be in the range 0-6." << endl;
+            continue;
+        } 
+        else if (x == bRow && y == bCol) {
             cout << "Cannot place a token at the beam's current position ('b')." << endl;
         }
-        cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
-        cin >> x;
-        cin.ignore(); // To ignore the ',' separator
-        cin >> y;
+        else if (grid[x][y] == '#') {
+            cout << "Cannot place a token on a blocked position ('#')." << endl;
+        }
+        else if (grid[x][y] == '/' || grid[x][y] == '\\' || grid[x][y] == '_' || grid[x][y] == '|') {
+            cout << "Cannot place a token where another token already exists." << endl;
+        }
+        else {
+            // If all conditions pass, valid coordinates
+            break;  // Exit the loop
+        }
+
+        // If any condition fails, prompt again for input
+        cin.clear();  // Clear error state
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Discard invalid input
     }
 
-    // Place the token at the specified coordinates
+    // Place the token and update the inventory
     grid[x][y] = token;
-    tokenInventory[token]--; // Decrease token count
+    tokenInventory[token]--;
+}
+
+// Function to extract user inputted coordinates
+void extractCoordinates(const string& input, int& x, int& y) {
+    stringstream ss(input);
+    char comma;
+    // Check for comma-separated coordinates
+    if (ss >> x >> comma >> y) {
+        return;  // Successfully extracted coordinates
+    } 
+    // Check for space-separated coordinates (for / and _ mirrors)
+    else {
+        stringstream ss2(input);
+        if (ss2 >> x >> y) {
+            return;
+        }
+    }
+    cerr << "Error: Invalid coordinate format!" << endl;
 }
 
 
