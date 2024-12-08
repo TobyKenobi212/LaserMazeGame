@@ -1,12 +1,11 @@
 Status of Development
 
-Registration/Login - Completed
-+Register for new users - Completed
-+Login function - Completed; hard coded users or newly created
-Main Menu - WIP
-+Menu Navigation - Completed
-+Implementation - WIP
-Game - WIP
-+Easy Level - WIP
-+Med Lvl - WIP
-+Hard Lvl - WIP
+| Developments  | Description | Status       |
+|---------------|-------------|--------------|
+| Registration/Login  |   Able to register new users and login; also works for hard coded users    | Completed  |
+|     Main Menu     | The main navigation menu that includes start game/highscores      | WIP    |
+| +Menu Navigation   | Able to nav between diff sections of game      | Completed  |
+| Game Function   | The actual lazer maze game      | WIP  |
+| +Easy lvl   | Functionality of easy lvls      | WIP  |
+| +Med lvl   | Functionality of med lvls      | WIP  |
+| +Hard lvl   | Functionality of hard lvls      | WIP  |
