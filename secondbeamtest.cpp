@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>  // To track token inventory
 
 using namespace std;
 
@@ -24,7 +25,14 @@ void spawnBeamDown(char grid[7][7], int& bRow, int& bCol, int& targetsFound);
 void printGrid(char grid[7][7]);
 
 // Grid scanning function prototype
-void scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets);
+void scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets, map<char, int>& tokenInventory);
+void scanTokens(const string& line, map<char, int>& tokenInventory);
+
+
+// Token placement prototype
+void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory);
+
+
 
 // Functions
 
@@ -53,6 +61,77 @@ bool isTarget(char cell)
 {
     return (cell == 'o');
 }
+
+// Function to prompt the user for a token and coordinates, then place the token
+void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory)
+{
+    char token;
+    int x, y;
+
+    // List of available tokens
+    cout << "Available tokens: / \\ | _" << endl;
+    cout << "Your current inventory:" << endl;
+    for (auto& item : tokenInventory) {
+        cout << item.first << ": " << item.second << endl;
+    }
+
+    cout << "Enter the token you want to place: ";
+    cin >> token;
+
+// Validate the token input
+    while (true) 
+    {
+        // Check if the token exists in the inventory
+       
+        // Check if the token is one of the valid options
+        if (token != '/' && token != '\\' && token != '|' && token != '_') 
+        {
+            cout << "Invalid token. Available tokens are: / \\ | _" << endl;    
+        }
+         else if (tokenInventory[token] <= 0) 
+        {
+            cout << "You don't have this token in your inventory." << endl;
+        }
+        else 
+        {
+            // Token is valid and available in inventory
+            break;  // Exit the loop
+        }
+        
+        // Prompt user to re-enter token
+        cout << "Enter the token you want to place: ";
+        cin >> token;
+    }
+
+
+    // Get the coordinates from the user in x,y format
+    cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
+    cin >> x;
+    cin.ignore(); // To ignore the ',' separator
+    cin >> y;
+
+    // Validate the coordinates input
+    while (x < 0 || x > 6 || y < 0 || y > 6 || (x == bRow && y == bCol))
+    {
+        if (x < 0 || x > 6 || y < 0 || y > 6)
+        {
+            cout << "Invalid coordinates. Please enter values between 0 and 6." << endl;
+        }
+        else if (x == bRow && y == bCol)
+        {
+            cout << "Cannot place a token at the beam's current position ('b')." << endl;
+        }
+        cout << "Enter the x,y coordinates (0-6) where you want to place the token: ";
+        cin >> x;
+        cin.ignore(); // To ignore the ',' separator
+        cin >> y;
+    }
+
+    // Place the token at the specified coordinates
+    grid[x][y] = token;
+    tokenInventory[token]--; // Decrease token count
+}
+
 
 // Function to spawn the beam rightwards
 void spawnBeamRight(char grid[7][7], int& bRow, int& bCol, int& targetsFound)
@@ -215,9 +294,29 @@ void printGrid(char grid[7][7])
     }
 }
 
-// Function to scan the grid from the file and initialize the beam position
-void scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets)
+// Function to scan the first line for tokens and update the inventory
+void scanTokens(const string& line, map<char, int>& tokenInventory)
 {
+    // Token counting: iterate over each character in the line
+    for (size_t i = 0; i < line.size(); ++i) {
+        char c = line[i];
+        if (c == '/' || c == '\\' || c == '|' || c == '_') {
+            tokenInventory[c]++; // Increment the count of the token
+        }
+    }
+}
+
+
+
+// Function to scan the grid from the file and initialize the beam position
+void scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets, map<char, int>& tokenInventory)
+{
+    string firstLine;
+    getline(input, firstLine); // Read the first line (Add on Tokens line)
+    
+    // Call scanTokens to count tokens in the first line
+    scanTokens(firstLine, tokenInventory);
+
     // Read the map into the grid and find the beam position
     for (int row = 0; row < 7; ++row)
     {
@@ -243,6 +342,7 @@ void scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& total
     }
 }
 
+
 // Main function
 int main()
 {
@@ -251,6 +351,9 @@ int main()
     int targetsFound = 0;
     int totalTargets = 0;
     char grid[7][7]; // 7x7 grid
+
+    // Token inventory setup
+    map<char, int> tokenInventory;
 
     // Open the map.txt file
     input.open("map.txt");
@@ -261,14 +364,36 @@ int main()
     }
 
     // Scan the grid and initialize the variables
-    scanGrid(input, grid, bRow, bCol, totalTargets);
+    scanGrid(input, grid, bRow, bCol, totalTargets, tokenInventory);
     input.close(); // Close the input file
 
     // Print the initial grid
     cout << "The map from the text file:" << endl;
     printGrid(grid);
 
-    // Spawn the beam in all directions
+    // Allow the user to place tokens from inventory
+    while (true)
+    {
+        placeToken(grid, bRow, bCol, tokenInventory);
+
+        // Check if inventory is empty
+        bool allUsed = true;
+        for (auto& item : tokenInventory)
+        {
+            if (item.second > 0)
+            {
+                allUsed = false;
+                break;
+            }
+        }
+
+        if (allUsed)
+            break;
+            printGrid(grid);
+
+    }
+
+    // Spawn the beams in all directions
     spawnBeamRight(grid, bRow, bCol, targetsFound);
     spawnBeamLeft(grid, bRow, bCol, targetsFound);
     spawnBeamUp(grid, bRow, bCol, targetsFound);
