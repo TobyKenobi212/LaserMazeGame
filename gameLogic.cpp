@@ -1,9 +1,11 @@
 /*    
     To test the file you would need to create "easy.txt" and "easyTemp.txt" and input both ONLY the coordinates
     from the "Easy Layout and Directions.txt"
+    or you can use your own coordinates, but make sure both coordinates need to be the same in both files
     
     laser beam: done 
-    reflected laser: only for mirrors 
+    reflected laser: done allowing the reflected laser to interact with another token's type (meaning the reflected
+                     laser would continue to reflect upon hitting another token)
     user menu: only 4 options for now
               1. Place Mirror (/ or \)
               2. Place Beam Splitter (_ or |)
@@ -14,9 +16,15 @@
                           easy.txt will never change! When the user reset the maze grid, the value of easy.txt would replaced the easyTemp.txt
     mirrors (/) and (\) : done
     beam splitter (_) and (|) : done
-    target (o): not done
+    target (o): done
+                targets only accept laser coming into the target and if at least 1 of the laser hit the target
+                then the code returns true, all targets need to return true (condition to clear the level)
+                when all the targets got hit, there will be a message under the maze grid in the terminal
+                that said "All targets hit! Level passed."
+    Messages: Adding messages everytime the users put down a token (motivation maybe)
     Need to integrate into the Classes files: still on it
 */
+
 #include <iostream>
 #include <fstream>
 #include <vector>
