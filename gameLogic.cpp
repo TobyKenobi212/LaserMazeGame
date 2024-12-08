@@ -47,6 +47,29 @@ void printGrid(const vector<vector<char>>& grid) {
     cout << endl;  // Add a newline after the grid display
 }
 
+string selectLevel() {
+    int levelChoice;
+    cout << "Choose your level:\n";
+    cout << "1. Easy\n";
+    cout << "2. Medium\n";
+    cout << "3. Hard\n";
+    cout << "Enter your choice (1, 2, or 3): ";
+    cin >> levelChoice;
+
+    // Return the corresponding level based on the user's choice
+    switch (levelChoice) {
+        case 1:
+            return "easy";   // Return "easy" if user chooses 1
+        case 2:
+            return "medium"; // Return "medium" if user chooses 2
+        case 3:
+            return "hard";   // Return "hard" if user chooses 3
+        default:
+            cout << "Invalid choice. Defaulting to 'easy'." << endl;
+            return "easy";   // Default to "easy" if invalid input
+    }
+}
+
 // Function to write the updated maze grid to a temporary file (easyTemp.txt)
 void writeGridToTempFile(const vector<vector<char>>& grid, const string& filename, 
                          const vector<pair<int, int>>& mirrors, const vector<pair<int, int>>& beamSplitters) {
@@ -304,8 +327,6 @@ vector<vector<bool>> shootLaser(vector<vector<char>>& grid, int laserX, int lase
     return targetHit;
 }
 
-
-
 // Function to extract coordinates from a string (e.g., "1,2" to x=1, y=2)
 void extractCoordinates(const string& input, int& x, int& y) {
     stringstream ss(input);
@@ -410,7 +431,8 @@ void readMirrors(ifstream& inputFile, vector<vector<char>>& grid, vector<pair<in
 }
 
 // Function to place mirrors or beam splitters on the grid manually
-void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterCount, int rows, int cols, vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters, int laserX, int laserY) {
+void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterCount, int rows, int cols, 
+                vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters, int laserX, int laserY, const string& currentLevel) {
     string token;
     int x, y;
 
@@ -429,10 +451,9 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     cin >> coords;
     extractCoordinates(coords, x, y);
 
-
     // Check if the coordinates are valid
-    if (x <= 0 || y <= 0 || x > rows || y > cols && 
-        grid[x][y] == '#' && grid[x][y] == 'b' && grid[x][y] == 'o') {
+    if (x <= 0 || y <= 0 || x > rows || y > cols || 
+        grid[x-1][y-1] == '#' || grid[x-1][y-1] == 'b' || grid[x-1][y-1] == 'o') {
         cout << "Invalid coordinates. Please try again." << endl;
         return;
     }
@@ -460,7 +481,7 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     auto targetHit = shootLaser(grid, laserX, laserY);
 
     // Write the updated grid to the temporary file
-    writeGridToTempFile(grid, "easyTemp.txt", mirrors, beamSplitters);
+    writeGridToTempFile(grid, currentLevel + "Temp.txt", mirrors, beamSplitters);
 
     // Display the updated maze grid
     cout << "Updated Maze Grid with Laser Path:" << endl;
@@ -491,13 +512,12 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
             "Oh, I don't know about that...",
             "Everyone makes mistakes, right?",
             "Close, you are getting there.",
-            "Hmm, maybe double-check those mirrors?",
+            "Hmm, is that place good enough?",
             "Not quite there.",
             "The laser disagrees with your strategy. Try again!",
             "Nice one!",
             "You're good at this!",
             "Fantastic move!",
-            "Show me your motivation.",
             "Are you giving up yet?"
         };
 
@@ -507,24 +527,24 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     }
 }
 
-
 // Function to reset the maze to the default state (from easy.txt to easyTemp.txt)
 void resetLevel(vector<vector<char>>& grid, int rows, int cols, 
-                vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters) {
-    // Read the original maze from easy.txt
-    ifstream easyFile("easy.txt");
-    ofstream tempFile("easyTemp.txt");
+                vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters, const string& currentLevel) {
+    string levelFile = currentLevel + ".txt";  // Use the current level file (easy.txt, medium.txt, hard.txt)
+    string tempFile = currentLevel + "Temp.txt"; // Corresponding temp file (easyTemp.txt, mediumTemp.txt, hardTemp.txt)
 
+    // Copy the level file to the temp file
+    ifstream levelFileStream(levelFile);
+    ofstream tempFileStream(tempFile);
     string line;
-    while (getline(easyFile, line)) {
-        tempFile << line << endl;
+    while (getline(levelFileStream, line)) {
+        tempFileStream << line << endl;
     }
+    levelFileStream.close();
+    tempFileStream.close();
 
-    easyFile.close();
-    tempFile.close();
-
-    // Reload the grid from easyTemp.txt to reflect the reset state
-    ifstream inputFile("easyTemp.txt");
+    // Reload the grid from the temp file
+    ifstream inputFile(tempFile);
     readGridSize(inputFile, rows, cols);
     grid = vector<vector<char>>(rows, vector<char>(cols, '.'));  // Reset the grid
     readLaserPosition(inputFile, grid, rows, cols);
@@ -540,12 +560,13 @@ void resetLevel(vector<vector<char>>& grid, int rows, int cols,
     printGrid(grid);
 
     // After reset, save the current grid state to easyTemp.txt again
-    writeGridToTempFile(grid, "easyTemp.txt", mirrors, beamSplitters);
+    writeGridToTempFile(grid, tempFile, mirrors, beamSplitters);
 }
 
-// Menu function to allow the user to input tokens
+// Menu function to allow the user to input tokens and go back to selecting a level
 void displayMenuAndPlaceTokens(vector<vector<char>>& grid, int rows, int cols, 
-                               vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters, int laserX, int laserY) {
+                               vector<pair<int, int>>& mirrors, vector<pair<int, int>>& beamSplitters, 
+                               int laserX, int laserY, string& currentLevel) {
     int mirrorCount = mirrors.size();
     int beamSplitterCount = beamSplitters.size();
     string choice;
@@ -555,19 +576,69 @@ void displayMenuAndPlaceTokens(vector<vector<char>>& grid, int rows, int cols,
         cout << "1. Place Mirror (/ or \\)\n";
         cout << "2. Place Beam Splitter (_ or |)\n";
         cout << "3. Reset Level\n";
-        cout << "4. Exit and save maze\n";
+        cout << "4. Go back and choose a new level\n";
+        cout << "5. Exit and save maze\n";
         cout << "Choose an option: ";
         cin >> choice;
 
         if (choice == "1" || choice == "2") {
-            placeToken(grid, mirrorCount, beamSplitterCount, rows, cols, mirrors, beamSplitters, laserX, laserY);
+            placeToken(grid, mirrorCount, beamSplitterCount, rows, cols, mirrors, beamSplitters, laserX, laserY, currentLevel);
         } else if (choice == "3") {
             beamSplitterCount = 0;
             mirrorCount = 0;
-            resetLevel(grid, rows, cols, mirrors, beamSplitters);  // Call the reset function
+            resetLevel(grid, rows, cols, mirrors, beamSplitters, currentLevel);  // Call the reset function
         } else if (choice == "4") {
+            // Allow the user to select a new level
+            cout << "\nYou chose to pick a new level.\n";
+            currentLevel = selectLevel();  // Re-select the level
+            // Re-load the grid based on the new level
+            string tempFile = currentLevel + "Temp.txt";
+            ifstream inputFile(tempFile);
+            if (!inputFile) {
+                cerr << "Error: Could not open the file " << tempFile << endl;
+                return;
+            }
+
+            readGridSize(inputFile, rows, cols);
+
+            // Initialize the grid with blank spaces ('.')
+            grid = vector<vector<char>>(rows, vector<char>(cols, '.'));
+            // Read the laser position and place it on the grid
+            readLaserPosition(inputFile, grid, rows, cols);
+            // Read the targets
+            readTargets(inputFile, grid);
+            // Read the blockers
+            readBlockers(inputFile, grid);
+            // Read the beam splitters
+            beamSplitters.clear();
+            readBeamSplitters(inputFile, grid, beamSplitters);
+            // Read the mirrors
+            mirrors.clear();
+            readMirrors(inputFile, grid, mirrors);
+            // Close the input file after reading
+            inputFile.close();
+            // Find the laser's position
+            laserX = -1, laserY = -1;
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < cols; ++j) {
+                    if (grid[i][j] == 'b') {
+                        laserX = i;
+                        laserY = j;
+                        break;
+                    }
+                }
+                if (laserX != -1) break;
+            }
+            // Simulate the laser path
+            if (laserX != -1 && laserY != -1) {
+                shootLaser(grid, laserX, laserY);
+            }
+            // Display the new maze grid in the terminal
+            cout << "New Maze Grid for " << currentLevel << " level:" << endl;
+            printGrid(grid);
+        } else if (choice == "5") {
             cout << "Saving maze..." << endl;
-            writeGridToTempFile(grid, "easyTemp.txt", mirrors, beamSplitters);  // Save the current state
+            writeGridToTempFile(grid, currentLevel + "Temp.txt", mirrors, beamSplitters);  // Save the current state
             break;  // Exit the menu loop
         } else {
             cout << "Invalid choice. Please try again." << endl;
@@ -575,12 +646,17 @@ void displayMenuAndPlaceTokens(vector<vector<char>>& grid, int rows, int cols,
     }
 }
 
-
 int main() {
-    // Read the maze size and grid from the file (e.g., "easy.txt")
-    ifstream inputFile("easyTemp.txt"); // Open the input file
+    // Select the level (easy, medium, or hard)
+    string currentLevel = selectLevel();  // Call it once and store the level
+
+    // Construct the file paths for the current level and its temporary file
+    string tempFile = currentLevel + "Temp.txt";
+
+    // Open the corresponding level file (e.g., "easy.txt", "medium.txt", or "hard.txt")
+    ifstream inputFile(tempFile);
     if (!inputFile) {
-        cerr << "Error: Could not open the file!" << endl;
+        cerr << "Error: Could not open the file " << tempFile << endl;
         return 1;
     }
 
@@ -629,15 +705,17 @@ int main() {
     }
 
     // Save the updated grid with the laser path
-    writeGridToTempFile(grid, "easyTemp.txt", mirrors, beamSplitters);
+    writeGridToTempFile(grid, tempFile, mirrors, beamSplitters);
 
     // Display the initial maze grid in the terminal
     cout << "Updated Maze Grid with Laser Path:" << endl;
     printGrid(grid);
 
     // Allow the user to place mirrors and beam splitters manually
-    displayMenuAndPlaceTokens(grid, rows, cols, mirrors, beamSplitters, laserX, laserY);
+    displayMenuAndPlaceTokens(grid, rows, cols, mirrors, beamSplitters, laserX, laserY, currentLevel);
 
     return 0;
 }
+
+
 
