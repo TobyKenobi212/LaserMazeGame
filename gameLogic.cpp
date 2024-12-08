@@ -22,6 +22,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -105,123 +106,157 @@ void writeGridToTempFile(const vector<vector<char>>& grid, const string& filenam
 }
 
 void shootLaser(vector<vector<char>>& grid, int laserX, int laserY) {
-    // Laser directions and corresponding symbols
-    vector<pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    vector<char> symbols = {'^', 'V', '<', '>'};
+    int rows = grid.size();
+    int cols = grid[0].size();
+    vector<vector<bool>> visited(rows, vector<bool>(cols, false)); // Track visited cells
+    queue<pair<pair<int, int>, pair<int, int>>> q; // ((x, y), direction)
 
-    // Lambda to check if a cell is within bounds
-    auto isInBounds = [&](int x, int y) {
-        return x >= 0 && x < grid.size() && y >= 0 && y < grid[0].size();
-    };
+    // Laser starts shooting in all four directions (0: right, 1: down, 2: left, 3: up)
+    vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    vector<char> directionSymbols = {'>', 'V', '<', '^'}; // Corresponding symbols for directions
 
-    // Function to handle a single laser path
-    auto processLaser = [&](int startX, int startY, int dx, int dy, int d) {
-        int x = startX, y = startY;
+    for (int i = 0; i < 4; ++i) {
+        q.push({{laserX, laserY}, directions[i]});
+    }
 
-        // Create a separate visited matrix for this path
-        vector<vector<bool>> visited(grid.size(), vector<bool>(grid[0].size(), false));
+    while (!q.empty()) {
+        auto current = q.front();
+        q.pop();
 
-        while (true) {
-            x += dx;
-            y += dy;
+        int x = current.first.first;
+        int y = current.first.second;
+        int dx = current.second.first;
+        int dy = current.second.second;
 
-            // Check boundaries
-            if (!isInBounds(x, y) || visited[x][y]) break;
-            visited[x][y] = true;
+        // Move the laser
+        x += dx;
+        y += dy;
 
-            char& cell = grid[x][y];
+        // Stop if out of bounds
+        if (x < 0 || x >= rows || y < 0 || y >= cols) continue;
 
-            if (cell == '#' || cell == '|' || cell == '_' || cell == 'b') {
-                break; // Stop at obstacles
-            } else if (cell == '/') {
-                if (dx == -1 && dy == 0) { // Laser coming from above (Up -> Right)
-                    dx = 0; dy = 1; d = 3; // Reflect Up -> Right
-                    // Clear any continuation of the laser path upward
-                    int clearX = x - 1, clearY = y;
-                    while (clearX >= 0 && grid[clearX][clearY] == '^') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearX--;
-                    }
-                } else if (dx == 1 && dy == 0) { // Laser coming from below (Down -> Left)
-                    dx = 0; dy = -1; d = 2; // Reflect Down -> Left
-                    // Clear any continuation of the laser path downward
-                    int clearX = x + 1, clearY = y;
-                    while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearX++;
-                    }
-                } else if (dx == 0 && dy == -1) { // Laser coming from the left (Left -> Down)
-                    dx = 1; dy = 0; d = 1; // Reflect Left -> Down
-                    // Clear any continuation of the laser path to the left
-                    int clearX = x, clearY = y - 1;
-                    while (clearY >= 0 && grid[clearX][clearY] == '<') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearY--;
-                    }
-                } else if (dx == 0 && dy == 1) { // Laser coming from the right (Right -> Up)
-                    dx = -1; dy = 0; d = 0; // Reflect Right -> Up
-                    // Clear any continuation of the laser path to the right
-                    int clearX = x, clearY = y + 1;
-                    while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearY++;
-                    }
+        // Stop if the cell has been visited in this direction
+        if (visited[x][y]) continue;
+        visited[x][y] = true; // Mark the cell as visited
+
+        // Handle different grid elements
+        if (grid[x][y] == '#' || grid[x][y] == 'b') {
+            // Blocker stops the laser (laser doesn't move forward in this direction)
+            continue;
+        } else if (grid[x][y] == 'o') {
+            // Target accepts the laser (but laser continues in the same direction)
+        } else if (grid[x][y] == '/') {
+            // Forward slash mirror reflects the laser
+            if (dx == -1 && dy == 0) {  // Laser is moving upward '^' (dx = -1)
+                // Clear the laser path moving upward
+                int clearX = x - 1, clearY = y;
+                while (clearX >= 0 && grid[clearX][clearY] == '^') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX--;
                 }
-            } else if (cell == '\\') {
-                // Reflection rules for '\'
-                if (dx == -1 && dy == 0) {       
-                    dx = 0; dy = -1; d = 2; // Up -> Left
-                    // Clear any continuation of the laser path to the upper
-                    int clearX = x - 1; int clearY = y;
-                    while (clearX >= 0 && grid[clearX][clearY] == '^') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearX--;
-                    }
-                }  
-                else if (dx == 1 && dy == 0) {    
-                    dx = 0; dy = 1; d = 3; // Down -> Right
-                    // Clear any continuation of the laser path to the below
-                    int clearX = x + 1; int clearY = y;
-                    while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearX++;
-                    }
-                } 
-                else if (dx == 0 && dy == -1) { 
-                    dx = -1; dy = 0; d = 0; // Left -> Up
-                    // Clear any continuation of the laser path to the left
-                    int clearX = x; int clearY = y - 1;
-                    while (clearY >= 0 && grid[clearX][clearY] == '<') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearY--;
-                    }
-                } 
-                else if (dx == 0 && dy == 1) { 
-                    dx = 1; dy = 0; d = 1;  // Right -> Down
-                    // Clear any continuation of the laser path to the right
-                    int clearX = x, clearY = y + 1;
-                    while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
-                        grid[clearX][clearY] = '.';  // Reset to empty cell
-                        clearY++;
-                    }
+                // Reflect the laser to the right '>'
+                q.push({{x, y}, {0, 1}}); // Reflect to the right
+            } else if (dx == 0 && dy == 1) { // Laser is moving right '>'
+                int clearX = x, clearY = y + 1;
+                while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY++;
                 }
-            } else if (cell == '.' || cell == symbols[d]) {
-                // Mark laser path
-                cell = symbols[d];
-            } else {
-                break; // Stop on any other obstacle
+                // Handle rightward laser reflection 
+                q.push({{x, y}, {-1, 0}});  // Reflect to upward '^'
+            } else if (dx == 1 && dy == 0) { // Laser is moving downward 'V'
+                int clearX = x + 1, clearY = y;
+                while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX++;
+                }
+                // Handle downward laser reflection 
+                q.push({{x, y}, {0, -1}});  // Reflect to left '<'
+            } else if (dx == 0 && dy == -1) { // Laser is moving left '<'
+                int clearX = x, clearY = y - 1;
+                while (clearY >= 0 && grid[clearX][clearY] == '<') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY--;
+                }
+                // Handle leftward laser reflection 
+                q.push({{x, y}, {1, 0}});   // Reflect to downward 'V'
             }
+            continue;
+        } else if (grid[x][y] == '\\') {
+            // Backslash mirror reflects the laser
+            if (dx == 0 && dy == 1) { // Laser is moving right '>'
+                int clearX = x, clearY = y + 1;
+                while (clearY < grid[0].size() && grid[clearX][clearY] == '>') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY++;
+                }
+                q.push({{x, y}, {1, 0}});   // Reflect to downward 'V'
+            } else if (dx == 0 && dy == -1) { // Laser is moving left '<'
+                int clearX = x, clearY = y - 1;
+                while (clearY >= 0 && grid[clearX][clearY] == '<') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearY--;
+                }
+                q.push({{x, y}, {-1, 0}});  // Reflect to upward '^'
+            } else if (dx == -1 && dy == 0) {  // Laser is moving upward '^'
+                int clearX = x - 1, clearY = y;
+                while (clearX >= 0 && grid[clearX][clearY] == '^') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX--;
+                }
+                q.push({{x, y}, {0, -1}});  // Reflect to left '<'
+            } else if (dx == 1 && dy == 0) { // Laser is moving downward 'V'
+                int clearX = x + 1, clearY = y;
+                while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX++;
+                }
+                q.push({{x, y}, {0, 1}}); // Reflect to the right
+            }
+            continue;
+        } else if (grid[x][y] == '_') {
+            if (dx == 1 && dy == 0) { // Laser is moving downward 'V'
+                int clearX = x + 1, clearY = y;
+                while (clearX < grid.size() && grid[clearX][clearY] == 'V') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX++;
+                }
+                // Horizontal beam splitter splits horizontally
+                q.push({{x, y}, {dx, dy}}); // Keep the current direction
+                q.push({{x, y}, {0, 1}});    // Split laser to the right
+                q.push({{x, y}, {0, -1}});   // Split laser to the left
+            } else if (dx == -1 && dy == 0) {  // Laser is moving upward '^'
+                int clearX = x - 1, clearY = y;
+                while (clearX >= 0 && grid[clearX][clearY] == '^') {
+                    grid[clearX][clearY] = '.';  // Reset to empty cell
+                    clearX--;
+                }
+                // Horizontal beam splitter splits horizontally
+                q.push({{x, y}, {dx, dy}}); // Keep the current direction
+                q.push({{x, y}, {0, 1}});    // Split laser to the right
+                q.push({{x, y}, {0, -1}});   // Split laser to the left
+            }
+
+            continue; // No more laser propagation in the current direction
+        } else if (grid[x][y] == '|') {
+            // Vertical beam splitter splits vertically
+            q.push({{x, y}, {dx, dy}}); // Keep the current direction
+            q.push({{x, y}, {1, 0}});    // Split laser downward
+            q.push({{x, y}, {-1, 0}});   // Split laser upward
+            continue; // No more laser propagation in the current direction
         }
-    };
 
-    // Iterate through all initial directions
-    for (int d = 0; d < directions.size(); ++d) {
-        int dx = directions[d].first, dy = directions[d].second;
+        // Mark the cell with the direction of the laser
+        else if (grid[x][y] == '.') {
+            grid[x][y] = directionSymbols[dx == 0 && dy == 1 ? 0 : (dx == 1 && dy == 0 ? 1 : (dx == 0 && dy == -1 ? 2 : 3))];
+        }
 
-        // Process each laser path independently
-        processLaser(laserX, laserY, dx, dy, d);
+        // Continue the laser in the current direction
+        q.push({{x, y}, {dx, dy}});
     }
 }
+
+
 
 // Function to extract coordinates from a string (e.g., "1,2" to x=1, y=2)
 void extractCoordinates(const string& input, int& x, int& y) {
@@ -346,6 +381,7 @@ void placeToken(vector<vector<char>>& grid, int& mirrorCount, int& beamSplitterC
     cin >> coords;
     extractCoordinates(coords, x, y);
 
+
     // Check if the coordinates are valid
     if (x <= 0 || y <= 0 || x > rows || y > cols) {
         cout << "Invalid coordinates. Please try again." << endl;
@@ -437,6 +473,8 @@ void displayMenuAndPlaceTokens(vector<vector<char>>& grid, int rows, int cols,
         if (choice == "1" || choice == "2") {
             placeToken(grid, mirrorCount, beamSplitterCount, rows, cols, mirrors, beamSplitters, laserX, laserY);
         } else if (choice == "3") {
+            beamSplitterCount = 0;
+            mirrorCount = 0;
             resetLevel(grid, rows, cols, mirrors, beamSplitters);  // Call the reset function
         } else if (choice == "4") {
             cout << "Saving maze..." << endl;
@@ -513,4 +551,6 @@ int main() {
 
     return 0;
 }
+
+
 
