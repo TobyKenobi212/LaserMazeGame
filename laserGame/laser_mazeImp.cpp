@@ -279,12 +279,12 @@ void GridScanner::scanGrid(std::ifstream& input, char grid[7][7], int& bRow, int
 // Standalone functions
 
 // Function to place a token and trigger the autosave
-void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory) {
+void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound) {
     char token;
     int x, y;
 
     // Display available tokens
-    std::cout << "Available tokens: ";
+    std::cout << "\nAvailable tokens: ";
     for (auto& item : tokenInventory) {
         for (int i = 0; i < item.second; ++i) {
             std::cout << item.first << " ";  // Print each token based on its count
@@ -322,7 +322,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
     // Validate the coordinates
     while (true) {
         std::string input;
-        std::cout << "Enter the row,column coordinates (0-6) where you want to place the token: ";
+        std::cout << "Enter the row,column coordinates (1-7) where you want to place the token: ";
         std::cin >> input;  // Read the full line of input
 
         if (!extractCoordinates(input, x, y))
@@ -332,17 +332,17 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
         }
 
         // Validate the range of coordinates
-        if (x < 0 || x > 6 || y < 0 || y > 6) {
+        if (x <= 0 || y <= 0 || x > 7 || y > 7) {
             std::cout << "Invalid input. Coordinates must be in the range 0-6." << std::endl;
             continue;
         } 
         else if (x == bRow && y == bCol) {
             std::cout << "Cannot place a token at the beam's current position ('b')." << std::endl;
         }
-        else if (grid[x][y] == '#') {
+        else if (grid[x-1][y-1] == '#') {
             std::cout << "Cannot place a token on a blocked position ('#')." << std::endl;
         }
-        else if (grid[x][y] == '/' || grid[x][y] == '\\' || grid[x][y] == '_' || grid[x][y] == '|') {
+        else if (grid[x-1][y-1] == '/' || grid[x-1][y-1] == '\\' || grid[x-1][y-1] == '_' || grid[x-1][y-1] == '|') {
             std::cout << "Cannot place a token where another token already exists." << std::endl;
         }
         else {
@@ -356,8 +356,14 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
     }
 
     // Place the token and update the inventory
-    grid[x][y] = token;
+    grid[x-1][y-1] = token;
     tokenInventory[token]--;
+
+    // Spawn the beams in all directions using Beam class
+    Beam::spawnBeamRight(grid, bRow, bCol, targetsFound);
+    Beam::spawnBeamLeft(grid, bRow, bCol, targetsFound);
+    Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
+    Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
 
     // Autosave the grid
     GridManager manager; // Create an instance of GridManager
