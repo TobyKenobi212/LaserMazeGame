@@ -3,6 +3,7 @@ using namespace std;
 
 LoginManager::LoginManager() {
     // Pre-populate with some users for testing
+    userDatabase.push_back({"dev", "d"});
     userDatabase.push_back({"Edward", "password935"});
     userDatabase.push_back({"Ludvig", "password115"});
 }
