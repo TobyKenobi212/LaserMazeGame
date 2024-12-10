@@ -429,7 +429,7 @@ void playGame(const std::string& difficulty, char choice)
     // Allow the user to place tokens from inventory using the TokenPlacer class
     while (!isInventoryEmpty(tokenInventory))
     {
-        placeToken(grid, bRow, bCol, tokenInventory);
+        placeToken(grid, bRow, bCol, tokenInventory, targetsFound);
 
         // Print the grid after placing tokens
         GridManager::printGrid(grid);
