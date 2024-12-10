@@ -3,8 +3,8 @@ using namespace std;
 
 LoginManager::LoginManager() {
     // Pre-populate with some users for testing
-    userDatabase.push_back({"user1", "password1"});
-    userDatabase.push_back({"user2", "password2"});
+    userDatabase.push_back({"Edward", "password935"});
+    userDatabase.push_back({"Ludvig", "password115"});
 }
 
 bool LoginManager::login(const string& username, const string& password) {
