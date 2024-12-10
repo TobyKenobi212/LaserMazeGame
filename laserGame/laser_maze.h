@@ -113,7 +113,7 @@ public:
 // Standalone functions
 
 // Function for placing tokens on the grid
-void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory);
+void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound);
 
 // Function for parsing user input into grid coordinates
 bool extractCoordinates(const std::string& input, int& x, int& y);
