@@ -10,4 +10,5 @@ Status of Development
 | +Easy lvl   | Functionality of easy lvls      | WIP  |
 | +Med lvl   | Functionality of med lvls      | WIP  |
 | +Hard lvl   | Functionality of hard lvls      | WIP  |
-| joe mama|
+| Saving User Data| Save levels unlocked, grid status after placing tokens, save player data (lives, score per difficulty) | WIP |
+
