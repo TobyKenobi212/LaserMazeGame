@@ -333,7 +333,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
 
         // Validate the range of coordinates
         if (x <= 0 || y <= 0 || x > 7 || y > 7) {
-            std::cout << "Invalid input. Coordinates must be in the range 0-6." << std::endl;
+            std::cout << "Invalid input. Coordinates must be in the range 1-7." << std::endl;
             continue;
         } 
         else if (x == bRow && y == bCol) {
@@ -342,6 +342,15 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
         else if (grid[x-1][y-1] == '#') {
             std::cout << "Cannot place a token on a blocked position ('#')." << std::endl;
         }
+          else if (grid[x-1][y-1] == 'o') 
+        {
+            std::cout << "Cannot place a token on a target ('o')." << std::endl;
+        }
+          else if (grid[x-1][y-1] == 'b') 
+        {
+            std::cout << "Cannot place a token on laser position ('b')." << std::endl;
+        }
+
         else if (grid[x-1][y-1] == '/' || grid[x-1][y-1] == '\\' || grid[x-1][y-1] == '_' || grid[x-1][y-1] == '|') {
             std::cout << "Cannot place a token where another token already exists." << std::endl;
         }
@@ -455,4 +464,3 @@ void playGame(const std::string& difficulty, char choice)
         std::cout << "Not all targets were hit!" << std::endl;
     }
 }
-
