@@ -122,5 +122,9 @@ bool extractCoordinates(const std::string& input, int& x, int& y);
 bool isInventoryEmpty(const std::map<char, int>& tokenInventory);
 
 
+// Play level function
+void playGame(const std::string& difficulty, char choice);
+
+
 
 #endif // LASER_MAZE_H
