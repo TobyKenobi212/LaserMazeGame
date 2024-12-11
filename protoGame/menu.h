@@ -2,10 +2,11 @@
 #define MENU_H
 
 #include <string>
+#include "player.h"
 
-void showMainMenu();
-void startGame();
+void showMainMenu(Player& player);
+void startGame(Player& player);
 void showHighScores();
-void selectLevel(const std::string& difficulty);
+void selectLevel(Player& player, const std::string& difficulty);
 
 #endif // MENU_H

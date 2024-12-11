@@ -1,8 +1,7 @@
 #include <iostream>
-#include "Login.h"
+#include "login_manager.h"
 #include "menu.h"
-#include "laser_maze.h"
-
+#include "player.h"
 using namespace std;
 
 int main() {
@@ -24,7 +23,8 @@ int main() {
 
             if (loginManager.login(user.username, user.password)) {
                 cout << "Login successful!\n";
-                showMainMenu();
+                Player player(user.username);
+                showMainMenu(player);
             } else {
                 cout << "Login failed. Please check your username and password.\n";
             }

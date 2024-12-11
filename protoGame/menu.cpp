@@ -3,7 +3,7 @@
 #include "laser_maze.h"
 using namespace std;
 
-void showMainMenu() {
+void showMainMenu(Player& player) {
     int choice;
     while (true) {
         cout << "\nMain Menu\n";
@@ -11,7 +11,7 @@ void showMainMenu() {
         cin >> choice;
 
         if (choice == 1) {
-            startGame();
+            startGame(player);
         } else if (choice == 2) {
             showHighScores();
         } else if (choice == 3) {
@@ -22,18 +22,18 @@ void showMainMenu() {
     }
 }
 
-void startGame() {
+void startGame(Player& player) {
     int choice;
     cout << "\nSelect Difficulty\n";
     cout << "1. Easy\n2. Medium\n3. Hard\nChoose an option: ";
     cin >> choice;
 
     if (choice == 1) {
-        selectLevel("Easy");
+        selectLevel(player, "Easy");
     } else if (choice == 2) {
-        selectLevel("Medium");
+        selectLevel(player, "Medium");
     } else if (choice == 3) {
-        selectLevel("Hard");
+        selectLevel(player, "Hard");
     } else {
         cout << "Invalid option. Please try again.\n";
     }
@@ -41,18 +41,26 @@ void startGame() {
 
 void selectLevel(const string& difficulty) {
     char choice;
+    int difficultyIndex = (difficulty == "Easy") ? 0 : (difficulty == "Medium") ? 1 : 2;
+
     cout << "\nSelect Level (" << difficulty << ")\n";
-    cout << "1. Level 1\n2. Level 2\nChoose an option: ";
+    cout << "1. Level 1\n";
+    if (player.getProgress(difficultyIndex) >= 1) {
+        cout << "2. Level 2\n";
+    }
+    cout << "Choose an option: ";
     cin >> choice;
 
     if (choice == '1') {
         cout << "Starting " << difficulty << " Level 1...\n";
         // Load and start the selected level
+        player.updateProgress(difficultyIndex, 1);
          playGame(difficulty, choice);
 
     } else if (choice == '2') {
         cout << "Starting " << difficulty << " Level 2...\n";
         // Load and start the selected level
+        player.updateProgress(difficultyIndex, 2);
         playGame(difficulty, choice);
 
     } else {
