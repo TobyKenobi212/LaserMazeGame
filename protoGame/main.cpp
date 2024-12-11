@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Login.h"
 #include "menu.h"
+#include "laser_maze.h"
 
 using namespace std;
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "menu.h"
+#include "laser_maze.h"
 using namespace std;
 
 void showMainMenu() {
@@ -39,17 +40,21 @@ void startGame() {
 }
 
 void selectLevel(const string& difficulty) {
-    int choice;
+    char choice;
     cout << "\nSelect Level (" << difficulty << ")\n";
     cout << "1. Level 1\n2. Level 2\nChoose an option: ";
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == '1') {
         cout << "Starting " << difficulty << " Level 1...\n";
         // Load and start the selected level
-    } else if (choice == 2) {
+         playGame(difficulty, choice);
+
+    } else if (choice == '2') {
         cout << "Starting " << difficulty << " Level 2...\n";
         // Load and start the selected level
+        playGame(difficulty, choice);
+
     } else {
         cout << "Invalid option. Please try again.\n";
     }
