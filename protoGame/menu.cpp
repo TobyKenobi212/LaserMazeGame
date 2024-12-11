@@ -1,13 +1,13 @@
 #include <iostream>
 #include "menu.h"
-#include "laser_maze.h"
+#include "laser_maze.h" // Include the lazergame header
 using namespace std;
 
 void showMainMenu(Player& player) {
     int choice;
     while (true) {
         cout << "\nMain Menu\n";
-        cout << "1. Start Game\n2. View High Scores\n3. Log Out\nChoose an option: ";
+        cout << "1. Start Game\n2. View High Scores\n3. Logout\nChoose an option: ";
         cin >> choice;
 
         if (choice == 1) {
@@ -39,32 +39,36 @@ void startGame(Player& player) {
     }
 }
 
-void selectLevel(const string& difficulty) {
-    char choice;
+void selectLevel(Player& player, const string& difficulty) {
+    int choice;
     int difficultyIndex = (difficulty == "Easy") ? 0 : (difficulty == "Medium") ? 1 : 2;
 
-    cout << "\nSelect Level (" << difficulty << ")\n";
-    cout << "1. Level 1\n";
-    if (player.getProgress(difficultyIndex) >= 1) {
+    while (true) {
+        cout << "\nSelect Level (" << difficulty << ")\n";
+        cout << "1. Level 1\n";
         cout << "2. Level 2\n";
-    }
-    cout << "Choose an option: ";
-    cin >> choice;
+        cout << "Choose an option: ";
+        cin >> choice;
 
-    if (choice == '1') {
-        cout << "Starting " << difficulty << " Level 1...\n";
-        // Load and start the selected level
-        playGame(difficulty, choice);
-        player.updateProgress(difficultyIndex, 1);
-
-    } else if (choice == 2 && player.getProgress(difficultyIndex) >= 1) {
-        cout << "Starting " << difficulty << " Level 2...\n";
-        // Load and start the selected level
-        playGame(difficulty, choice);
-        player.updateProgress(difficultyIndex, 2);
-
-    } else {
-        cout << "Invalid option. Please try again.\n";
+        if (choice == 1) {
+            cout << "Starting " << difficulty << " Level 1...\n";
+            // Load and start the selected level
+            playGame(difficulty, '1');
+            player.updateProgress(difficultyIndex, 1);
+            break;
+        } else if (choice == 2) {
+            if (player.getProgress(difficultyIndex) >= 1) {
+                cout << "Starting " << difficulty << " Level 2...\n";
+                // Load and start the selected level
+                playGame(difficulty, '2');
+                player.updateProgress(difficultyIndex, 2);
+                break;
+            } else {
+                cout << "You must beat Level 1 first before playing Level 2.\n";
+            }
+        } else {
+            cout << "Invalid option. Please try again.\n";
+        }
     }
 }
 

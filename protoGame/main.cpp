@@ -10,7 +10,7 @@ int main() {
     int choice;
 
     while (true) {
-        cout << "1. Register\n2. Log in\n3. Exit\nChoose an option: ";
+        cout << "1. Register\n2. Login\n3. Exit\nChoose an option: ";
         cin >> choice;
 
         if (choice == 1) {
@@ -18,7 +18,7 @@ int main() {
             cin >> user;
             loginManager.registerUser(user.username, user.password);
         } else if (choice == 2) {
-            cout << "Log in\n";
+            cout << "Login\n";
             cin >> user;
 
             if (loginManager.login(user.username, user.password)) {
