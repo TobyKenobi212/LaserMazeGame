@@ -54,14 +54,14 @@ void selectLevel(const string& difficulty) {
     if (choice == '1') {
         cout << "Starting " << difficulty << " Level 1...\n";
         // Load and start the selected level
+        playGame(difficulty, choice);
         player.updateProgress(difficultyIndex, 1);
-         playGame(difficulty, choice);
 
     } else if (choice == '2') {
         cout << "Starting " << difficulty << " Level 2...\n";
         // Load and start the selected level
-        player.updateProgress(difficultyIndex, 2);
         playGame(difficulty, choice);
+        player.updateProgress(difficultyIndex, 2);
 
     } else {
         cout << "Invalid option. Please try again.\n";
