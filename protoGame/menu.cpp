@@ -57,7 +57,7 @@ void selectLevel(const string& difficulty) {
         playGame(difficulty, choice);
         player.updateProgress(difficultyIndex, 1);
 
-    } else if (choice == '2') {
+    } else if (choice == 2 && player.getProgress(difficultyIndex) >= 1) {
         cout << "Starting " << difficulty << " Level 2...\n";
         // Load and start the selected level
         playGame(difficulty, choice);
