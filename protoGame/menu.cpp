@@ -15,6 +15,9 @@ void showMainMenu(Player& player) {
         } else if (choice == 2) {
             showHighScores();
         } else if (choice == 3) {
+            ofstream out(player.getUsername() + ".txt");
+            out << player; // Save player progress to file
+            out.close();
             break;
         } else {
             cout << "Invalid option. Please try again.\n";

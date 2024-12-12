@@ -38,3 +38,23 @@ void Player::updateProgress(int difficulty, int level) {
         progress[difficulty] = level;
     }
 }
+
+ostream& operator<<(ostream& out, const Player& player) {
+    out << player.username << endl;
+    out << player.lives << endl;
+    out << player.score << endl;
+    for (int i = 0; i < 3; ++i) {
+        out << player.progress[i] << endl;
+    }
+    return out;
+}
+
+istream& operator>>(istream& in, Player& player) {
+    in >> player.username;
+    in >> player.lives;
+    in >> player.score;
+    for (int i = 0; i < 3; ++i) {
+        in >> player.progress[i];
+    }
+    return in;
+}
