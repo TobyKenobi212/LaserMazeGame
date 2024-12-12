@@ -7,7 +7,7 @@ void showMainMenu(Player& player) {
     int choice;
     while (true) {
         cout << "\nMain Menu\n";
-        cout << "1. Start Game\n2. View High Scores\n3. Logout\nChoose an option: ";
+        cout << "1. Start Game\n2. View High Scores\n3. Log Out\nChoose an option: ";
         cin >> choice;
 
         if (choice == 1) {
@@ -53,15 +53,17 @@ void selectLevel(Player& player, const string& difficulty) {
         if (choice == 1) {
             cout << "Starting " << difficulty << " Level 1...\n";
             // Load and start the selected level
-            playGame(difficulty, '1');
-            player.updateProgress(difficultyIndex, 1);
+            if (playGame(difficulty, '1')) {
+                player.updateProgress(difficultyIndex, 1);
+            }
             break;
         } else if (choice == 2) {
             if (player.getProgress(difficultyIndex) >= 1) {
                 cout << "Starting " << difficulty << " Level 2...\n";
                 // Load and start the selected level
-                playGame(difficulty, '2');
-                player.updateProgress(difficultyIndex, 2);
+                if (playGame(difficulty, '2')) {
+                    player.updateProgress(difficultyIndex, 2);
+                }
                 break;
             } else {
                 cout << "You must beat Level 1 first before playing Level 2.\n";

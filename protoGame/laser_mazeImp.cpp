@@ -407,60 +407,47 @@ bool isInventoryEmpty(const std::map<char, int>& tokenInventory)
     return true; // All tokens used
 }
 
-void playGame(const std::string& difficulty, char choice)
-{
+bool playGame(const std::string& difficulty, char choice) {
     // Game logic setup
     std::ifstream input;
     int bRow = 0, bCol = 0;
     int targetsFound = 0;
     int totalTargets = 0;
     char grid[7][7]; // 7x7 grid
-
     // Token inventory setup
     std::map<char, int> tokenInventory;
-
     // Open the map.txt file
     input.open(difficulty + choice + ".txt");
-    if (!input)
-    {
+    if (!input) {
         std::cerr << "ERROR: COULD NOT OPEN FILE." << std::endl;
-        return;
+        return false;
     }
-
     // Scan the grid and initialize the variables using the GridScanner class
     GridScanner::scanGrid(input, grid, bRow, bCol, totalTargets, tokenInventory);
     input.close(); // Close the input file
-
     // Print the initial grid using the GridManager class
     std::cout << "The map from the text file:" << std::endl;
     GridManager::printGrid(grid);
-
     // Allow the user to place tokens from inventory using the TokenPlacer class
-    while (!isInventoryEmpty(tokenInventory))
-    {
+    while (!isInventoryEmpty(tokenInventory)) {
         placeToken(grid, bRow, bCol, tokenInventory, targetsFound);
-
         // Print the grid after placing tokens
         GridManager::printGrid(grid);
     }
-
     // Spawn the beams in all directions using Beam class
     Beam::spawnBeamRight(grid, bRow, bCol, targetsFound);
     Beam::spawnBeamLeft(grid, bRow, bCol, targetsFound);
     Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
     Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
-
     // Print the final grid
     std::cout << "\nThe result:" << std::endl;
     GridManager::printGrid(grid);
-
     // Print success message
-    if (targetsFound == totalTargets)
-    {
+    if (targetsFound == totalTargets) {
         std::cout << "Success!" << std::endl;
-    }
-    else
-    {
+        return true;
+    } else {
         std::cout << "Not all targets were hit!" << std::endl;
+        return false;
     }
 }
