@@ -123,7 +123,7 @@ bool isInventoryEmpty(const std::map<char, int>& tokenInventory);
 
 
 // Play level function
-void playGame(const std::string& difficulty, char choice);
+bool playGame(const std::string& difficulty, char choice);
 
 
 
