@@ -7,7 +7,7 @@ void showMainMenu(Player& player) {
     int choice;
     while (true) {
         cout << "\nMain Menu\n";
-        cout << "1. Start Game\n2. View High Scores\n3. Log Out\nChoose an option: ";
+        cout << "1. Start Game\n2. View High Scores\n3. Logout\nChoose an option: ";
         cin >> choice;
 
         if (choice == 1) {
@@ -18,6 +18,7 @@ void showMainMenu(Player& player) {
             ofstream out(player.getUsername() + ".txt");
             out << player; // Save player progress to file
             out.close();
+            cout << "\n";
             break;
         } else {
             cout << "Invalid option. Please try again.\n";
