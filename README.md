@@ -10,5 +10,7 @@ Status of Development
 | +Easy lvl   | Functionality of easy lvls      | WIP  |
 | +Med lvl   | Functionality of med lvls      | WIP  |
 | +Hard lvl   | Functionality of hard lvls      | WIP  |
-| Saving User Data| grid status after placing tokens, save player data (lives, score per difficulty) | WIP |
+| Saving User Data| saves the data of user from player info to the lvls | WIP |
 | +Level unlocked | Save levels unlocked | Completed |
+| +Grid status | Saves the grid and tokens of lvl | WIP |
+| +Player data | Save the lives and score earned | WIP |
