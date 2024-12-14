@@ -8,8 +8,15 @@ void showMainMenu(Player& player) {
     while (true) {
         cout << "\nMain Menu\n";
         cout << "1. Start Game\n2. View High Scores\n3. Logout\nChoose an option: ";
-        cin >> choice;
 
+        // Validate input
+        if (!(cin >> choice)) {
+            // If input fails, clear the error state and ignore the invalid input
+            cin.clear();  // Clear the error state
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Ignore the rest of the invalid input
+            cout << "Invalid option. Please try again.\n";
+            continue;  // Skip the rest of the loop and prompt again
+        }
         if (choice == 1) {
             startGame(player);
         } else if (choice == 2) {
@@ -20,8 +27,6 @@ void showMainMenu(Player& player) {
             out.close();
             cout << "\n";
             break;
-        } else {
-            cout << "Invalid option. Please try again.\n";
         }
     }
 }

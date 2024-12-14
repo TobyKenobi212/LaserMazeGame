@@ -4,6 +4,7 @@
 */
 
 #include "laser_maze.h"
+#include "menu.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -224,7 +225,7 @@ void GridScanner::scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCo
 // Standalone functions
 
 // Function to place a token and trigger the autosave
-void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory, int& targetsFound) {
+void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory, int& targetsFound, Player& player) {
     char token;
     int x, y;
 
@@ -238,7 +239,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     cout << endl;
 
     while (true) {
-        cout << "\nEnter the token you want to place: ";
+        cout << "\nEnter the token you want to place, or type E to exit: ";
         cin >> token;
 
         // Clear the input buffer to remove any leftover characters
@@ -248,9 +249,13 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
             continue;
         }
+        if (token == 'E')
+        {
+            showMainMenu(player);
+        }
 
         // Validate the token type
-        if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
+        else if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
             cout << "Invalid token type. Please choose /, \\ , _, or |." << endl;
             continue;
         } 
@@ -369,7 +374,7 @@ bool playGame(Player& player, const string& difficulty, char choice) {
         player.printLives(); // Print lives
         // Allow the user to place tokens from inventory using the TokenPlacer class
         while (!isInventoryEmpty(tokenInventory)) {
-            placeToken(grid, bRow, bCol, tokenInventory, targetsFound);
+            placeToken(grid, bRow, bCol, tokenInventory, targetsFound, player);
             // Print the grid after placing tokens
             GridManager::printGrid(grid);
         }
