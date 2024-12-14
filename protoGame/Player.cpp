@@ -13,8 +13,24 @@ void Player::loseLife() {
     }
 }
 
+bool Player::isOutOfLives() const {
+    return lives <= 0;
+}
+
+void Player::resetLives() {
+    lives = 3;
+}   
+
 int Player::getLives() const {
     return lives;
+}
+
+void Player::printLives() const {
+    cout << "Lives: ";
+    for (int i = 0; i < lives; ++i) {
+        cout << "| ";
+    }
+    cout << endl;
 }
 
 void Player::addScore(int points) {

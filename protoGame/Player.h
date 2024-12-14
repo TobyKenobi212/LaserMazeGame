@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <string>
+#include <iostream>
 #include <fstream>
 
 class Player {
@@ -21,6 +22,9 @@ public:
     std::string getUsername() const;
     int getProgress(int difficulty) const;
     void updateProgress(int difficulty, int level);
+    void resetLives(); 
+    bool isOutOfLives() const; 
+    void printLives() const;
 
     friend std::ostream& operator<<(std::ostream& out, const Player& player);
     friend std::istream& operator>>(std::istream& in, Player& player);

@@ -33,10 +33,13 @@ void startGame(Player& player) {
     cin >> choice;
 
     if (choice == 1) {
+        player.resetLives();
         selectLevel(player, "Easy");
     } else if (choice == 2) {
+        player.resetLives();
         selectLevel(player, "Medium");
     } else if (choice == 3) {
+        player.resetLives();
         selectLevel(player, "Hard");
     } else {
         cout << "Invalid option. Please try again.\n";
@@ -57,7 +60,7 @@ void selectLevel(Player& player, const string& difficulty) {
         if (choice == 1) {
             cout << "Starting " << difficulty << " Level 1...\n";
             // Load and start the selected level
-            if (playGame(difficulty, '1')) {
+            if (playGame(player, difficulty, '1')) {
                 player.updateProgress(difficultyIndex, 1);
             }
             break;
@@ -65,7 +68,7 @@ void selectLevel(Player& player, const string& difficulty) {
             if (player.getProgress(difficultyIndex) >= 1) {
                 cout << "Starting " << difficulty << " Level 2...\n";
                 // Load and start the selected level
-                if (playGame(difficulty, '2')) {
+                if (playGame(player, difficulty, '2')) {
                     player.updateProgress(difficultyIndex, 2);
                 }
                 break;
