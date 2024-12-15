@@ -1,5 +1,8 @@
 /*
     File containing class methods for Player class
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #ifndef PLAYER_H
 #define PLAYER_H
