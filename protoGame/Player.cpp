@@ -1,5 +1,8 @@
 /*
     File containing class method implementation for Player.h
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #include "player.h"
 using namespace std;
