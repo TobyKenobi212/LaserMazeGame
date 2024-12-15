@@ -1,3 +1,6 @@
+/*
+    Main file to run the program
+*/
 #include <iostream>
 #include "Login.h"
 #include "menu.h"
