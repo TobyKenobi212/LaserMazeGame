@@ -1,6 +1,9 @@
 /*
     File containing class method implementation for laser_maze.h
     Also includes some standalone function implementation
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #include "laser_maze.h"
 #include "menu.h"
