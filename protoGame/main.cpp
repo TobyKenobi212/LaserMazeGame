@@ -5,6 +5,7 @@
     Version 1.03
 */
 
+#include <limits>
 #include <iostream>
 #include "Login.h"
 #include "menu.h"
