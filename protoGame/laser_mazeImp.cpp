@@ -301,13 +301,7 @@ bool placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     // Place the token and update the inventory
     grid[x-1][y-1] = token;
     tokenInventory[token]--;
-
-    // Spawn the beams in all directions using Beam class
-    Beam::spawnBeamRight(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamLeft(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
-
+    
     // Autosave the grid
     player.autosave();
 
@@ -383,7 +377,7 @@ bool playGame(Player& player, const string& difficulty, char choice) {
         // Print success message
         if (targetsFound == totalTargets) {
             cout << "Success!" << endl;
-            remove((username + "_autosave.txt").c_str());
+            remove(("autosaves/" + username + "_autosave.txt").c_str());
             int score = player.getLives() * 100;
             cout << "Score: " << score << " pts" << endl;
             player.updateHighestScore(difficultyIndex, levelIndex, score);
@@ -395,7 +389,7 @@ bool playGame(Player& player, const string& difficulty, char choice) {
             player.autosave();
             if (player.isOutOfLives()) {
                 cout << "You have lost all your lives. Returning to the main menu..." << endl;
-                remove((username + "_autosave.txt").c_str());
+                remove(("autosaves/" + username + "_autosave.txt").c_str());
                 cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << endl;
                 return false;
             }

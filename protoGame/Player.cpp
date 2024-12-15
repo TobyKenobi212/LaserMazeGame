@@ -76,7 +76,7 @@ void Player::updateProgress(int difficulty, int level) {
 
 // Autosave function
 void Player::autosave() {
-    ofstream outFile(username + "_autosave.txt");
+    ofstream outFile("autosaves/" + username + "_autosave.txt");
     if (outFile.is_open()) {
         outFile << username << endl;
         outFile << lives << endl;
@@ -94,7 +94,7 @@ void Player::autosave() {
 
 // Load the autosave if it exists
 void Player::loadAutosave() {
-    ifstream inFile(username + "_autosave.txt");
+    ifstream inFile("autosaves/" + username + "_autosave.txt");
     if (inFile.is_open()) {
         string tempUsername, tempCurrentLevel;
         int tempLives, tempScore, tempProgress[3];
@@ -123,12 +123,12 @@ void Player::loadAutosave() {
                 
                 cout << "Autosave loaded for level: " << currentLevel << "\n";
             } else {
-                remove((username + "_autosave.txt").c_str());
+                remove(("autosaves/" + username + "_autosave.txt").c_str());
                 cout << "Autosave does not match current level. Starting fresh.\n";
             }
         } else {
             cout << "Error reading autosave file.\n";
-            remove((username + "_autosave.txt").c_str());
+            remove(("autosaves/" + username + "_autosave.txt").c_str());
         }
         
         inFile.close();
