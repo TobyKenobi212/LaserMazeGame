@@ -301,9 +301,6 @@ bool placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     // Place the token and update the inventory
     grid[x-1][y-1] = token;
     tokenInventory[token]--;
-    
-    // Autosave the grid
-    player.autosave();
 
     return false; // Indicate that the player did not choose to exit
 }
