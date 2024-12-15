@@ -233,15 +233,28 @@ bool placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
 
     while (true) {
         cout << "\nEnter the token you want to place, or type E to exit: ";
-        if (!(cin >> token) || token == 'E' || token == 'e') {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        // Read the input
+        string input;
+        getline(cin, input);
+
+        // Trim leading and trailing whitespace
+        input.erase(0, input.find_first_not_of(" \t"));
+        input.erase(input.find_last_not_of(" \t") + 1);
+
+        // Check if input is exactly 'e' or 'E'
+        if (input == "e" || input == "E") {
             cout << "Exiting to main menu...\n";
             return true; // Indicate that the player chose to exit
         }
 
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear leftover input
+        // If input is empty, prompt again
+        if (input.empty()) {
+            cout << "Invalid input. Please try again.\n";
+            continue;
+        }
 
+        // Use the first character as the token
+        char token = input[0];
         // Validate the token type
         if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
             cout << "Invalid token type. Please choose /, \\ , _, or |." << endl;
