@@ -1,5 +1,8 @@
 /*
     File containing function implementation for menu navigation
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #include <iostream>
 #include "menu.h"
