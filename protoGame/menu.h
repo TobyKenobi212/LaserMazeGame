@@ -1,3 +1,6 @@
+/*
+    File containing menu function prototypes
+*/
 #ifndef MENU_H
 #define MENU_H
 

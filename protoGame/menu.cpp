@@ -1,3 +1,6 @@
+/*
+    File containing function implementation for menu navigation
+*/
 #include <iostream>
 #include "menu.h"
 #include "laser_maze.h" // Include the lazergame header
@@ -62,19 +65,31 @@ void selectLevel(Player& player, const string& difficulty) {
         cout << "Choose an option: ";
         cin >> choice;
 
+        string levelName = difficulty + " Level " + to_string(choice);
+
         if (choice == 1) {
             cout << "Starting " << difficulty << " Level 1...\n";
+
+            // Load autosave if the level matches the last played level
+            player.setCurrentLevel(levelName);
+            player.loadAutosave();
+
             // Load and start the selected level
             if (playGame(player, difficulty, '1')) {
-                player.updateProgress(difficultyIndex, 1);
+                player.updateProgress(difficultyIndex, choice);
             }
             break;
         } else if (choice == 2) {
             if (player.getProgress(difficultyIndex) >= 1) {
                 cout << "Starting " << difficulty << " Level 2...\n";
+
+                // Load autosave if the level matches the last played level
+                player.setCurrentLevel(levelName);
+                player.loadAutosave();
+
                 // Load and start the selected level
                 if (playGame(player, difficulty, '2')) {
-                    player.updateProgress(difficultyIndex, 2);
+                    player.updateProgress(difficultyIndex, choice);
                 }
                 break;
             } else {

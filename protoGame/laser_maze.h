@@ -2,7 +2,6 @@
     Header file that contains classes for the game logic.
     Function prototypes only.
     Standalone non-class functions also included
-    TODO: Some members could be private
 */
 
 #ifndef LASER_MAZE_H
@@ -111,7 +110,7 @@ public:
 // Standalone functions
 
 // Function for placing tokens on the grid
-void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound);
+void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound, Player& player);
 
 // Function for parsing user input into grid coordinates
 bool extractCoordinates(const std::string& input, int& x, int& y);

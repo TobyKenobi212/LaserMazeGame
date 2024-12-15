@@ -1,16 +1,11 @@
 /*
     File containing class method implementation for laser_maze.h
-    TODO: Find uses for object instances(?)
+    Also includes some standalone function implementation
 */
 
 #include "laser_maze.h"
 #include "menu.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <map>
-#include <string>
+
 using namespace std;
 
 // Class functions
@@ -240,22 +235,19 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
 
     while (true) {
         cout << "\nEnter the token you want to place, or type E to exit: ";
-        cin >> token;
 
-        // Clear the input buffer to remove any leftover characters
-        if (cin.peek() != '\n') {
-            cout << "Invalid token type. Please enter a single character only." << endl;
-            cin.clear();                   // Clear error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
-            continue;
-        }
-        if (token == 'E')
-        {
+        if (!(cin >> token) || token == 'E' || token == 'e') {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Exiting to main menu...\n";
             showMainMenu(player);
+            break;  // Exit to main menu
         }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear leftover input
 
         // Validate the token type
-        else if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
+        if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
             cout << "Invalid token type. Please choose /, \\ , _, or |." << endl;
             continue;
         } 
@@ -321,8 +313,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
 
     // Autosave the grid
-    GridManager manager; // Create an instance of GridManager
-    manager.autoSaveGrid(grid, "autosave.txt");
+    player.autosave();
 }
 
 // Function to extract user inputted coordinates
@@ -357,6 +348,7 @@ bool playGame(Player& player, const string& difficulty, char choice) {
         int targetsFound = 0;
         int totalTargets = 0;
         char grid[7][7]; // 7x7 grid
+        string username = player.getUsername();
         // Token inventory setup
         map<char, int> tokenInventory;
         // Open the map.txt file
@@ -389,12 +381,15 @@ bool playGame(Player& player, const string& difficulty, char choice) {
         // Print success message
         if (targetsFound == totalTargets) {
             cout << "Success!" << endl;
+            remove((username + "_autosave.txt").c_str());
             return true;
         } else {
             cout << "Not all targets were hit!" << endl;
             player.loseLife();
+            player.autosave();
             if (player.isOutOfLives()) {
                 cout << "You have lost all your lives. Returning to the main menu..." << endl;
+                remove((username + "_autosave.txt").c_str());
                 return false;
             }
             cout << "Try again!\n";
