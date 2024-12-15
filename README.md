@@ -8,7 +8,7 @@ Status of Development
 | +HighScore   | Tracks the high score of users      | Not Started  |
 | Game Function   | The actual lazer maze game     | WIP  |
 | +Lives   | Functionality of lives      | Completed  |
-| +Score   | Functionality of score      | WIP  |
+| +Score   | Functionality of score      | Completed  |
 | +Leave   | Functionality of leaving midgame      | Completed  |
 | +Easy lvl   | Functionality of easy lvls      | WIP  |
 | +Med lvl   | Functionality of med lvls      | WIP  |
@@ -16,4 +16,4 @@ Status of Development
 | Saving User Data| saves the data of user from player info to the lvls | WIP |
 | +Level unlocked | Save levels unlocked | Completed |
 | +Grid status | Saves the lives in last played level | Completed |
-| +Player data | Save the lives and score earned | WIP |
+| +Player data | Save the lives and score earned | Completed |
