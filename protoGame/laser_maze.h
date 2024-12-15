@@ -2,6 +2,9 @@
     Header file that contains classes for the game logic.
     Function prototypes only.
     Standalone non-class functions also included
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 
 #ifndef LASER_MAZE_H
