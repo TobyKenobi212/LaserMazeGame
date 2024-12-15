@@ -9,7 +9,7 @@ Status of Development
 | Game Function   | The actual lazer maze game     | WIP  |
 | +Lives   | Functionality of lives      | Completed  |
 | +Score   | Functionality of score      | WIP  |
-| +Leave   | Functionality of leaving midgame      | WIP  |
+| +Leave   | Functionality of leaving midgame      | Completed  |
 | +Easy lvl   | Functionality of easy lvls      | WIP  |
 | +Med lvl   | Functionality of med lvls      | WIP  |
 | +Hard lvl   | Functionality of hard lvls      | WIP  |
