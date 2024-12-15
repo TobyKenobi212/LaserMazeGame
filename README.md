@@ -5,7 +5,7 @@ Status of Development
 | Registration/Login  |   Able to register new users and login; also works for hard coded users    | Completed  |
 |     Main Menu     | The main navigation menu that includes start game      | Completed    |
 | +Menu Navigation   | Able to nav between diff sections of game    | Completed  |
-| +HighScore   | Tracks the high score of users      | Not Started  |
+| +HighScore   | Tracks the high score of users      | WIP  |
 | Game Function   | The actual lazer maze game     | WIP  |
 | +Lives   | Functionality of lives      | Completed  |
 | +Score   | Functionality of score      | Completed  |
