@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 struct User {
     std::string username;
@@ -22,6 +23,10 @@ public:
     bool login(const std::string& username, const std::string& password);
     void registerUser(const std::string& username, const std::string& password);
     bool userExists(const std::string& username) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const LoginManager& manager);
+    friend std::istream& operator>>(std::istream& in, LoginManager& manager);
 };
+
 
 #endif // LOGIN_MANAGER_H

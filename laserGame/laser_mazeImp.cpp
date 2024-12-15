@@ -1,236 +1,188 @@
 /*
     File containing class method implementation for laser_maze.h
-    TODO: Find uses for object instances(?)
-
+    Also includes some standalone function implementation
 */
-
 #include "laser_maze.h"
+#include "menu.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <limits>
 #include <map>
 #include <string>
+using namespace std;
 
 // Class functions
 
 // Helper functions to check if a cell contains a token 
-bool GridObject::isObstacle(char cell)
-{
+bool GridObject::isObstacle(char cell) {
     return (cell == '#');
 }
-bool GridObject::isMirrorForward(char cell)
-{
+
+bool GridObject::isMirrorForward(char cell) {
     return (cell == '/');
 }
-bool GridObject::isMirrorBack(char cell)
-{
+
+bool GridObject::isMirrorBack(char cell) {
     return (cell == '\\');
 }
-bool GridObject::isVertSplit(char cell)
-{
+
+bool GridObject::isVertSplit(char cell) {
     return (cell == '|');
 }
-bool GridObject::isHoriSplit(char cell)
-{
+
+bool GridObject::isHoriSplit(char cell) {
     return (cell == '_');
 }
-bool GridObject::isTarget(char cell)
-{
+
+bool GridObject::isTarget(char cell) {
     return (cell == 'o');
 }
 
 // Autosave function to write the current grid to a file
-void GridManager::autoSaveGrid(char grid[7][7], const std::string& filename)
-{
-    std::ofstream output(filename);
+void GridManager::autoSaveGrid(char grid[7][7], const string& filename) {
+    ofstream output(filename);
 
-    if (!output)
-    {
-        std::cerr << "ERROR: COULD NOT OPEN AUTOSAVE FILE." << std::endl;
+    if (!output) {
+        cerr << "ERROR: COULD NOT OPEN AUTOSAVE FILE." << endl;
         return;
     }
 
-    for (int row = 0; row < 7; ++row)
-    {
-        for (int col = 0; col < 7; ++col)
-        {
+    for (int row = 0; row < 7; ++row) {
+        for (int col = 0; col < 7; ++col) {
             output << grid[row][col]; // Write the cell value
         }
-        output << std::endl; // End of the row
+        output << endl; // End of the row
     }
 
     output.close();
-    std::cout << "Grid autosaved to " << filename << "." << std::endl;
+    cout << "Grid autosaved to " << filename << "." << endl;
 }
 
 // Function to print the grid
-void GridManager::printGrid(char grid[7][7])
-{
-    for (int row = 0; row < 7; ++row)
-    {
-        for (int col = 0; col < 7; ++col)
-        {
-            std::cout << grid[row][col] << " ";
+void GridManager::printGrid(char grid[7][7]) {
+    for (int row = 0; row < 7; ++row) {
+        for (int col = 0; col < 7; ++col) {
+            cout << grid[row][col] << " ";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
-
 // Function to spawn the beam rightwards
-void Beam::spawnBeamRight(char grid[7][7], int& bRow, int& bCol, int& targetsFound)
-{
-    for (int i = bCol + 1; i < 7; ++i)
-    {
+void Beam::spawnBeamRight(char grid[7][7], int& bRow, int& bCol, int& targetsFound) {
+    for (int i = bCol + 1; i < 7; ++i) {
         if (GridObject::isObstacle(grid[bRow][i])) break;
-        if (GridObject::isTarget(grid[bRow][i])) 
-        {
+        if (GridObject::isTarget(grid[bRow][i])) {
             targetsFound++;
         }
-        if (GridObject::isMirrorForward(grid[bRow][i]))
-        {
-          Beam::spawnBeamUp(grid, bRow, i, targetsFound);
+        if (GridObject::isMirrorForward(grid[bRow][i])) {
+            Beam::spawnBeamUp(grid, bRow, i, targetsFound);
             break;
         }
-        if (GridObject::isMirrorBack(grid[bRow][i]))
-        {
-          Beam::spawnBeamDown(grid, bRow, i, targetsFound);
+        if (GridObject::isMirrorBack(grid[bRow][i])) {
+            Beam::spawnBeamDown(grid, bRow, i, targetsFound);
             break;
         }
-        if (GridObject::isHoriSplit(grid[bRow][i]))
-        {
-          Beam::spawnBeamRight(grid, bRow, i, targetsFound);
+        if (GridObject::isHoriSplit(grid[bRow][i])) {
+            Beam::spawnBeamRight(grid, bRow, i, targetsFound);
         }
-        if (GridObject::isVertSplit(grid[bRow][i]))
-        {
-          Beam::spawnBeamUp(grid, bRow, i, targetsFound);
-          Beam::spawnBeamDown(grid, bRow, i, targetsFound);
+        if (GridObject::isVertSplit(grid[bRow][i])) {
+            Beam::spawnBeamUp(grid, bRow, i, targetsFound);
+            Beam::spawnBeamDown(grid, bRow, i, targetsFound);
         }
-        if (grid[bRow][i] == '.')
-        {
+        if (grid[bRow][i] == '.') {
             grid[bRow][i] = '>';
-        }
-        else break;
+        } else break;
     }
 }
 
 // Function to spawn the beam leftwards
-void  Beam::spawnBeamLeft(char grid[7][7], int& bRow, int& bCol, int& targetsFound)
-{
-    for (int i = bCol - 1; i >= 0; --i)
-    {
+void Beam::spawnBeamLeft(char grid[7][7], int& bRow, int& bCol, int& targetsFound) {
+    for (int i = bCol - 1; i >= 0; --i) {
         if (GridObject::isObstacle(grid[bRow][i])) break;
-        if (GridObject::isTarget(grid[bRow][i])) 
-        {
+        if (GridObject::isTarget(grid[bRow][i])) {
             targetsFound++;
         }
-        if (GridObject::isMirrorForward(grid[bRow][i]))
-        {
-          Beam::spawnBeamDown(grid, bRow, i, targetsFound);
+        if (GridObject::isMirrorForward(grid[bRow][i])) {
+            Beam::spawnBeamDown(grid, bRow, i, targetsFound);
             break;
         }
-        if (GridObject::isMirrorBack(grid[bRow][i]))
-        {
-          Beam::spawnBeamUp(grid, bRow, i, targetsFound);
+        if (GridObject::isMirrorBack(grid[bRow][i])) {
+            Beam::spawnBeamUp(grid, bRow, i, targetsFound);
             break;
         }
-        if (GridObject::isHoriSplit(grid[bRow][i]))
-        {
-          Beam::spawnBeamLeft(grid, bRow, i, targetsFound);
+        if (GridObject::isHoriSplit(grid[bRow][i])) {
+            Beam::spawnBeamLeft(grid, bRow, i, targetsFound);
         }
-        if (GridObject::isVertSplit(grid[bRow][i]))
-        {
-          Beam::spawnBeamUp(grid, bRow, i, targetsFound);
-          Beam::spawnBeamDown(grid, bRow, i, targetsFound);
+        if (GridObject::isVertSplit(grid[bRow][i])) {
+            Beam::spawnBeamUp(grid, bRow, i, targetsFound);
+            Beam::spawnBeamDown(grid, bRow, i, targetsFound);
         }
-        if (grid[bRow][i] == '.')
-        {
+        if (grid[bRow][i] == '.') {
             grid[bRow][i] = '<';
-        }
-        else break;
+        } else break;
     }
 }
 
 // Function to spawn the beam upwards
-void  Beam::spawnBeamUp(char grid[7][7], int& bRow, int& bCol, int& targetsFound)
-{
-    for (int j = bRow - 1; j >= 0; --j)
-    {
+void Beam::spawnBeamUp(char grid[7][7], int& bRow, int& bCol, int& targetsFound) {
+    for (int j = bRow - 1; j >= 0; --j) {
         if (GridObject::isObstacle(grid[j][bCol])) break;
-        if (GridObject::isTarget(grid[j][bCol])) 
-        {
+        if (GridObject::isTarget(grid[j][bCol])) {
             targetsFound++;
         }
-        if (GridObject::isMirrorForward(grid[j][bCol]))
-        {
+        if (GridObject::isMirrorForward(grid[j][bCol])) {
             Beam::spawnBeamRight(grid, j, bCol, targetsFound);
             break;
         }
-        if (GridObject::isMirrorBack(grid[j][bCol]))
-        {
-          Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
+        if (GridObject::isMirrorBack(grid[j][bCol])) {
+            Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
             break;
         }
-        if (GridObject::isHoriSplit(grid[j][bCol]))
-        {
-          Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
-          Beam::spawnBeamRight(grid, j, bCol, targetsFound);        
+        if (GridObject::isHoriSplit(grid[j][bCol])) {
+            Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
+            Beam::spawnBeamRight(grid, j, bCol, targetsFound);        
         }
-        if (GridObject::isVertSplit(grid[j][bCol]))
-        {
-          Beam::spawnBeamUp(grid, j, bCol, targetsFound);
+        if (GridObject::isVertSplit(grid[j][bCol])) {
+            Beam::spawnBeamUp(grid, j, bCol, targetsFound);
         }
-        if (grid[j][bCol] == '.')
-        {
+        if (grid[j][bCol] == '.') {
             grid[j][bCol] = '^';
-        }
-        else break;
+        } else break;
     }
 }
 
 // Function to spawn the beam downwards
-void  Beam::spawnBeamDown(char grid[7][7], int& bRow, int& bCol, int& targetsFound)
-{
-    for (int j = bRow + 1; j < 7; ++j)
-    {
+void Beam::spawnBeamDown(char grid[7][7], int& bRow, int& bCol, int& targetsFound) {
+    for (int j = bRow + 1; j < 7; ++j) {
         if (GridObject::isObstacle(grid[j][bCol])) break;
-        if (GridObject::isTarget(grid[j][bCol])) 
-        {
+        if (GridObject::isTarget(grid[j][bCol])) {
             targetsFound++;
         }
-        if (GridObject::isMirrorForward(grid[j][bCol]))
-        {
-          Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
+        if (GridObject::isMirrorForward(grid[j][bCol])) {
+            Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
             break;
         }
-        if (GridObject::isMirrorBack(grid[j][bCol]))
-        {
-          Beam:  Beam::spawnBeamRight(grid, j, bCol, targetsFound);
+        if (GridObject::isMirrorBack(grid[j][bCol])) {
+            Beam::spawnBeamRight(grid, j, bCol, targetsFound);
             break;
         }
-        if (GridObject::isHoriSplit(grid[j][bCol]))
-        {
-          Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
-          Beam::spawnBeamRight(grid, j, bCol, targetsFound);        
+        if (GridObject::isHoriSplit(grid[j][bCol])) {
+            Beam::spawnBeamLeft(grid, j, bCol, targetsFound);
+            Beam::spawnBeamRight(grid, j, bCol, targetsFound);        
         }
-        if (GridObject::isVertSplit(grid[j][bCol]))
-        {
-          Beam::spawnBeamDown(grid, j, bCol, targetsFound);
+        if (GridObject::isVertSplit(grid[j][bCol])) {
+            Beam::spawnBeamDown(grid, j, bCol, targetsFound);
         }
-        if (grid[j][bCol] == '.')
-        {
+        if (grid[j][bCol] == '.') {
             grid[j][bCol] = 'v';
-        }
-        else break;
+        } else break;
     }
 }
 
-
-
 // Function to scan the first line for tokens and update the inventory
-void GridScanner::scanTokens(const std::string& line, std::map<char, int>& tokenInventory)
-{
+void GridScanner::scanTokens(const string& line, map<char, int>& tokenInventory) {
     // Token counting: iterate over each character in the line
     for (size_t i = 0; i < line.size(); ++i) {
         char c = line[i];
@@ -240,36 +192,29 @@ void GridScanner::scanTokens(const std::string& line, std::map<char, int>& token
     }
 }
 
-
-
 // Function to scan the grid from the file and initialize the beam position
-void GridScanner::scanGrid(std::ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets, std::map<char, int>& tokenInventory)
-{
-    std::string firstLine;
+void GridScanner::scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCol, int& totalTargets, map<char, int>& tokenInventory) {
+    string firstLine;
     getline(input, firstLine); // Read the first line (Add on Tokens line)
     
     // Call scanTokens to count tokens in the first line
     scanTokens(firstLine, tokenInventory);
 
     // Read the map into the grid and find the beam position
-    for (int row = 0; row < 7; ++row)
-    {
-        std::string line;
+    for (int row = 0; row < 7; ++row) {
+        string line;
         getline(input, line); // Read a line from the file
-        for (int col = 0; col < 7; ++col)
-        {
+        for (int col = 0; col < 7; ++col) {
             grid[row][col] = line[col]; // Populate the grid
 
             // Find the beam position
-            if (grid[row][col] == 'b')
-            {
+            if (grid[row][col] == 'b') {
                 bRow = row;
                 bCol = col;
             }
 
             // Count the total targets
-            if (GridObject::isTarget(grid[row][col]))
-            {
+            if (GridObject::isTarget(grid[row][col])) {
                 totalTargets++;
             }
         }
@@ -279,7 +224,7 @@ void GridScanner::scanGrid(std::ifstream& input, char grid[7][7], int& bRow, int
 // Standalone functions
 
 // Function to place a token and trigger the autosave
-void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound) {
+bool placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound, Player& player) {
     char token;
     int x, y;
 
@@ -293,7 +238,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
     std::cout << std::endl;
 
     while (true) {
-        std::cout << "\nEnter the token you want to place: ";
+        std::cout << "\nEnter the token you want to place, or type E to exit: ";
         std::cin >> token;
 
         // Clear the input buffer to remove any leftover characters
@@ -303,9 +248,12 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
             continue;
         }
+        if (token == 'E') {
+            return true; // Indicate that the player chose to exit
+        }
 
         // Validate the token type
-        if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
+        else if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
             std::cout << "Invalid token type. Please choose /, \\ , _, or |." << std::endl;
             continue;
         } 
@@ -325,8 +273,7 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
         std::cout << "Enter the row,column coordinates (1-7) where you want to place the token: ";
         std::cin >> input;  // Read the full line of input
 
-        if (!extractCoordinates(input, x, y))
-        {
+        if (!extractCoordinates(input, x, y)) {
             std::cout << "Error: Invalid coordinate format!" << std::endl;
             continue;
         }
@@ -342,15 +289,12 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
         else if (grid[x-1][y-1] == '#') {
             std::cout << "Cannot place a token on a blocked position ('#')." << std::endl;
         }
-          else if (grid[x-1][y-1] == 'o') 
-        {
+        else if (grid[x-1][y-1] == 'o') {
             std::cout << "Cannot place a token on a target ('o')." << std::endl;
         }
-          else if (grid[x-1][y-1] == 'b') 
-        {
+        else if (grid[x-1][y-1] == 'b') {
             std::cout << "Cannot place a token on laser position ('b')." << std::endl;
         }
-
         else if (grid[x-1][y-1] == '/' || grid[x-1][y-1] == '\\' || grid[x-1][y-1] == '_' || grid[x-1][y-1] == '|') {
             std::cout << "Cannot place a token where another token already exists." << std::endl;
         }
@@ -377,12 +321,13 @@ void placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
     // Autosave the grid
     GridManager manager; // Create an instance of GridManager
     manager.autoSaveGrid(grid, "autosave.txt");
+
+    return false; // Indicate that the player did not choose to exit
 }
 
 // Function to extract user inputted coordinates
-bool extractCoordinates(const std::string& input, int& x, int& y) 
-{
-    std::stringstream ss(input);
+bool extractCoordinates(const string& input, int& x, int& y) {
+    stringstream ss(input);
     char comma;
     // Check for comma-separated coordinates
     if (ss >> x >> comma >> y) {
@@ -390,77 +335,78 @@ bool extractCoordinates(const std::string& input, int& x, int& y)
     } 
     // Check for space-separated coordinates (for / and _ mirrors)
     else {
-            return false;
-        }
+        return false;
+    }
 }
 
 // Function to check inventory
-bool isInventoryEmpty(const std::map<char, int>& tokenInventory)
-{
-    for (const auto& item : tokenInventory)
-    {
-        if (item.second > 0)
-        {
+bool isInventoryEmpty(const map<char, int>& tokenInventory) {
+    for (const auto& item : tokenInventory) {
+        if (item.second > 0) {
             return false; // Found at least one token still in inventory
         }
     }
     return true; // All tokens used
 }
 
-void playGame(const std::string& difficulty, char choice)
-{
-    // Game logic setup
-    std::ifstream input;
-    int bRow = 0, bCol = 0;
-    int targetsFound = 0;
-    int totalTargets = 0;
-    char grid[7][7]; // 7x7 grid
-
-    // Token inventory setup
-    std::map<char, int> tokenInventory;
-
-    // Open the map.txt file
-    input.open(difficulty + choice + ".txt");
-    if (!input)
-    {
-        std::cerr << "ERROR: COULD NOT OPEN FILE." << std::endl;
-        return;
-    }
-
-    // Scan the grid and initialize the variables using the GridScanner class
-    GridScanner::scanGrid(input, grid, bRow, bCol, totalTargets, tokenInventory);
-    input.close(); // Close the input file
-
-    // Print the initial grid using the GridManager class
-    std::cout << "The map from the text file:" << std::endl;
-    GridManager::printGrid(grid);
-
-    // Allow the user to place tokens from inventory using the TokenPlacer class
-    while (!isInventoryEmpty(tokenInventory))
-    {
-        placeToken(grid, bRow, bCol, tokenInventory, targetsFound);
-
-        // Print the grid after placing tokens
+bool playGame(Player& player, const std::string& difficulty, char choice) {
+    int difficultyIndex = (difficulty == "Easy") ? 0 : (difficulty == "Medium") ? 1 : 2;
+    int levelIndex = (choice == '1') ? 0 : 1;
+    while (true) {
+        // Game logic setup
+        std::ifstream input;
+        int bRow = 0, bCol = 0;
+        int targetsFound = 0;
+        int totalTargets = 0;
+        char grid[7][7]; // 7x7 grid
+        // Token inventory setup
+        std::map<char, int> tokenInventory;
+        // Open the map.txt file
+        input.open(difficulty + choice + ".txt");
+        if (!input) {
+            std::cerr << "ERROR: COULD NOT OPEN FILE." << std::endl;
+            return false;
+        }
+        // Scan the grid and initialize the variables using the GridScanner class
+        GridScanner::scanGrid(input, grid, bRow, bCol, totalTargets, tokenInventory);
+        input.close(); // Close the input file
+        // Print the initial grid using the GridManager class
+        std::cout << "The map from the text file:" << std::endl;
         GridManager::printGrid(grid);
-    }
-
-    // Spawn the beams in all directions using Beam class
-    Beam::spawnBeamRight(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamLeft(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
-    Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
-
-    // Print the final grid
-    std::cout << "\nThe result:" << std::endl;
-    GridManager::printGrid(grid);
-
-    // Print success message
-    if (targetsFound == totalTargets)
-    {
-        std::cout << "Success!" << std::endl;
-    }
-    else
-    {
-        std::cout << "Not all targets were hit!" << std::endl;
+        player.printLives(); // Print lives
+        // Allow the user to place tokens from inventory using the TokenPlacer class
+        while (!isInventoryEmpty(tokenInventory)) {
+            if (placeToken(grid, bRow, bCol, tokenInventory, targetsFound, player)) {
+                return false; // Exit to main menu if the player chose to exit
+            }
+            // Print the grid after placing tokens
+            GridManager::printGrid(grid);
+        }
+        // Spawn the beams in all directions using Beam class
+        Beam::spawnBeamRight(grid, bRow, bCol, targetsFound);
+        Beam::spawnBeamLeft(grid, bRow, bCol, targetsFound);
+        Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
+        Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
+        // Print the final grid
+        std::cout << "\nThe result:" << std::endl;
+        GridManager::printGrid(grid);
+        // Print success message
+        if (targetsFound == totalTargets) {
+            std::cout << "Success!" << std::endl;
+            int score = player.getLives() * 100;
+            std::cout << "Score: " << score << " pts" << std::endl;
+            player.updateHighestScore(difficultyIndex, levelIndex, score);
+            std::cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << std::endl;
+            return true;
+        } else {
+            std::cout << "Not all targets were hit!" << std::endl;
+            player.loseLife();
+            if (player.isOutOfLives()) {
+                std::cout << "You have lost all your lives. Returning to the main menu..." << std::endl;
+                std::cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << std::endl;
+                return false;
+            }
+            std::cout << "Try again!\n";
+        }
     }
 }

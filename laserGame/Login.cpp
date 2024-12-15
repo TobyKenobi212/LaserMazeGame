@@ -46,3 +46,25 @@ ostream& operator<<(ostream& os, const User& user) {
     os << "Username: " << user.username << ", Password: " << user.password;
     return os;
 }
+
+ostream& operator<<(ostream& out, const LoginManager& manager) {
+    out << manager.userDatabase.size() << endl;
+    for (const auto& user : manager.userDatabase) {
+        out << user.username << endl;
+        out << user.password << endl;
+    }
+    return out;
+}
+
+istream& operator>>(istream& in, LoginManager& manager) {
+    size_t size;
+    in >> size;
+    manager.userDatabase.clear();
+    for (size_t i = 0; i < size; ++i) {
+        User user;
+        in >> user.username;
+        in >> user.password;
+        manager.userDatabase.push_back(user);
+    }
+    return in;
+}

@@ -2,9 +2,6 @@
     Header file that contains classes for the game logic.
     Function prototypes only.
     Standalone non-class functions also included
-    TODO: Some members could be private
-
-
 */
 
 #ifndef LASER_MAZE_H
@@ -17,6 +14,7 @@
 #include <map>
 #include <limits>
 #include <sstream>
+#include "player.h" // Include the Player header file
 
 // Utility functions to check the properties of grid cells
 class GridObject {
@@ -27,7 +25,7 @@ public:
     // Checks if the cell contains a forward-slash mirror ('/')
     static bool isMirrorForward(char cell);
 
-    // Checks if the cell contains a backslash mirror ('\')
+    // Checks if the cell contains a backslash mirror ('\\')
     static bool isMirrorBack(char cell);
 
     // Checks if the cell is a target ('T')
@@ -109,7 +107,6 @@ public:
     );
 };
 
-
 // Standalone functions
 
 // Function for placing tokens on the grid
@@ -121,10 +118,7 @@ bool extractCoordinates(const std::string& input, int& x, int& y);
 // Function to check if the token inventory is empty
 bool isInventoryEmpty(const std::map<char, int>& tokenInventory);
 
-
 // Play level function
-void playGame(const std::string& difficulty, char choice);
-
-
+bool playGame(Player& player, const std::string& difficulty, char choice);
 
 #endif // LASER_MAZE_H
