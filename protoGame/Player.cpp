@@ -74,6 +74,16 @@ void Player::updateProgress(int difficulty, int level) {
     }
 }
 
+int Player::getTotalHighestScore() const {
+    int totalScore = 0;
+    for (int i = 0; i < 3; ++i) { // For each difficulty
+        for (int j = 0; j < 2; ++j) { // For each level
+            totalScore += highestScores[i][j];
+        }
+    }
+    return totalScore;
+}
+
 // Autosave function
 void Player::autosave() {
     ofstream outFile("autosaves/" + username + "_autosave.txt");

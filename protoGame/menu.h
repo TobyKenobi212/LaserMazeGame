@@ -6,10 +6,11 @@
 
 #include <string>
 #include "player.h"
+#include "leaderboard.h"
 
-void showMainMenu(Player& player);
+void showMainMenu(Player& player, Leaderboard& leaderboard);
 void startGame(Player& player);
-void showHighScores();
+void showLeaderboardMenu(Leaderboard& leaderboard);
 void selectLevel(Player& player, const std::string& difficulty);
 
 #endif // MENU_H

@@ -4,21 +4,25 @@
 #include <iostream>
 #include "menu.h"
 #include "laser_maze.h" // Include the lazergame header
+#include "leaderboard.h"
 using namespace std;
 
-void showMainMenu(Player& player) {
+Leaderboard leaderboard;
+
+void showMainMenu(Player& player, Leaderboard& leaderboard) {
     int choice;
     while (true) {
         cout << "\nMain Menu\n";
-        cout << "1. Start Game\n2. View High Scores\n3. Logout\nChoose an option: ";
+        cout << "1. Start Game\n2. View Leaderboard\n3. Logout\nChoose an option: ";
         cin >> choice;
 
         if (choice == 1) {
             startGame(player);
+            leaderboard.addPlayer(player); // Ensure player is added after game
         } else if (choice == 2) {
-            showHighScores();
+            showLeaderboardMenu(leaderboard);
         } else if (choice == 3) {
-            ofstream out(player.getUsername() + ".txt");
+            ofstream out("player_data/" + player.getUsername() + ".txt");
             out << player; // Save player progress to file
             out.close();
             cout << "\n";
@@ -68,10 +72,8 @@ void selectLevel(Player& player, const string& difficulty) {
 
         if (choice == 1) {
             cout << "Starting " << difficulty << " Level 1...\n";
-            // Load autosave if the level matches the last played level
             player.setCurrentLevel(levelName);
             player.loadAutosave();
-            // Load and start the selected level
             if (playGame(player, difficulty, '1')) {
                 player.updateProgress(difficultyIndex, choice);
             }
@@ -79,10 +81,8 @@ void selectLevel(Player& player, const string& difficulty) {
         } else if (choice == 2) {
             if (player.getProgress(difficultyIndex) >= 1) {
                 cout << "Starting " << difficulty << " Level 2...\n";
-                // Load autosave if the level matches the last played level
                 player.setCurrentLevel(levelName);
                 player.loadAutosave();
-                // Load and start the selected level
                 if (playGame(player, difficulty, '2')) {
                     player.updateProgress(difficultyIndex, choice);
                 }
@@ -96,7 +96,18 @@ void selectLevel(Player& player, const string& difficulty) {
     }
 }
 
-void showHighScores() {
-    cout << "\nHigh Scores\n";
-    // Display high scores
+void showLeaderboardMenu(Leaderboard& leaderboard) {
+    int choice;
+    while (true) {
+        cout << "\nLeaderboard\n";
+        leaderboard.displayLeaderboard();
+        cout << "\nEnter '1' to exit to Main Menu: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            break;
+        } else {
+            cout << "Invalid option. Please try again.\n";
+        }
+    }
 }

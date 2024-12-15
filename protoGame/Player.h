@@ -31,6 +31,7 @@ public:
     void printLives() const;
     int getHighestScore(int difficulty, int level) const;
     void updateHighestScore(int difficulty, int level, int score);
+    int getTotalHighestScore() const;
     // Autosaving functionality
     void setCurrentLevel(const std::string& level);
     std::string getCurrentLevel() const;
