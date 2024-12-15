@@ -4,12 +4,6 @@
 */
 #include "laser_maze.h"
 #include "menu.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <map>
-#include <string>
 using namespace std;
 
 // Class functions
@@ -224,41 +218,37 @@ void GridScanner::scanGrid(ifstream& input, char grid[7][7], int& bRow, int& bCo
 // Standalone functions
 
 // Function to place a token and trigger the autosave
-bool placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenInventory, int& targetsFound, Player& player) {
+bool placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInventory, int& targetsFound, Player& player) {
     char token;
     int x, y;
 
     // Display available tokens
-    std::cout << "\nAvailable tokens: ";
+    cout << "\nAvailable tokens: ";
     for (auto& item : tokenInventory) {
         for (int i = 0; i < item.second; ++i) {
-            std::cout << item.first << " ";  // Print each token based on its count
+            cout << item.first << " ";  // Print each token based on its count
         }
     }
-    std::cout << std::endl;
+    cout << endl;
 
     while (true) {
-        std::cout << "\nEnter the token you want to place, or type E to exit: ";
-        std::cin >> token;
-
-        // Clear the input buffer to remove any leftover characters
-        if (std::cin.peek() != '\n') {
-            std::cout << "Invalid token type. Please enter a single character only." << std::endl;
-            std::cin.clear();                   // Clear error state
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
-            continue;
-        }
-        if (token == 'E') {
+        cout << "\nEnter the token you want to place, or type E to exit: ";
+        if (!(cin >> token) || token == 'E' || token == 'e') {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Exiting to main menu...\n";
             return true; // Indicate that the player chose to exit
         }
 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear leftover input
+
         // Validate the token type
-        else if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
-            std::cout << "Invalid token type. Please choose /, \\ , _, or |." << std::endl;
+        if (!(token == '/' || token == '\\' || token == '_' || token == '|')) {
+            cout << "Invalid token type. Please choose /, \\ , _, or |." << endl;
             continue;
         } 
         else if (tokenInventory[token] <= 0) {
-            std::cout << "You don't have this token in your inventory." << std::endl;
+            cout << "You don't have this token in your inventory." << endl;
             continue;
         } 
         else {
@@ -269,34 +259,34 @@ bool placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
 
     // Validate the coordinates
     while (true) {
-        std::string input;
-        std::cout << "Enter the row,column coordinates (1-7) where you want to place the token: ";
-        std::cin >> input;  // Read the full line of input
+        string input;
+        cout << "Enter the row,column coordinates (1-7) where you want to place the token: ";
+        cin >> input;  // Read the full line of input
 
         if (!extractCoordinates(input, x, y)) {
-            std::cout << "Error: Invalid coordinate format!" << std::endl;
+            cout << "Error: Invalid coordinate format!" << endl;
             continue;
         }
 
         // Validate the range of coordinates
         if (x <= 0 || y <= 0 || x > 7 || y > 7) {
-            std::cout << "Invalid input. Coordinates must be in the range 1-7." << std::endl;
+            cout << "Invalid input. Coordinates must be in the range 1-7." << endl;
             continue;
         } 
         else if (x == bRow && y == bCol) {
-            std::cout << "Cannot place a token at the beam's current position ('b')." << std::endl;
+            cout << "Cannot place a token at the beam's current position ('b')." << endl;
         }
         else if (grid[x-1][y-1] == '#') {
-            std::cout << "Cannot place a token on a blocked position ('#')." << std::endl;
+            cout << "Cannot place a token on a blocked position ('#')." << endl;
         }
         else if (grid[x-1][y-1] == 'o') {
-            std::cout << "Cannot place a token on a target ('o')." << std::endl;
+            cout << "Cannot place a token on a target ('o')." << endl;
         }
         else if (grid[x-1][y-1] == 'b') {
-            std::cout << "Cannot place a token on laser position ('b')." << std::endl;
+            cout << "Cannot place a token on laser position ('b')." << endl;
         }
         else if (grid[x-1][y-1] == '/' || grid[x-1][y-1] == '\\' || grid[x-1][y-1] == '_' || grid[x-1][y-1] == '|') {
-            std::cout << "Cannot place a token where another token already exists." << std::endl;
+            cout << "Cannot place a token where another token already exists." << endl;
         }
         else {
             // If all conditions pass, valid coordinates
@@ -304,8 +294,8 @@ bool placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
         }
 
         // If any condition fails, prompt again for input
-        std::cin.clear();  // Clear error state
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Discard invalid input
+        cin.clear();  // Clear error state
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Discard invalid input
     }
 
     // Place the token and update the inventory
@@ -319,8 +309,7 @@ bool placeToken(char grid[7][7], int bRow, int bCol, std::map<char, int>& tokenI
     Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
 
     // Autosave the grid
-    GridManager manager; // Create an instance of GridManager
-    manager.autoSaveGrid(grid, "autosave.txt");
+    player.autosave();
 
     return false; // Indicate that the player did not choose to exit
 }
@@ -349,29 +338,30 @@ bool isInventoryEmpty(const map<char, int>& tokenInventory) {
     return true; // All tokens used
 }
 
-bool playGame(Player& player, const std::string& difficulty, char choice) {
+bool playGame(Player& player, const string& difficulty, char choice) {
     int difficultyIndex = (difficulty == "Easy") ? 0 : (difficulty == "Medium") ? 1 : 2;
     int levelIndex = (choice == '1') ? 0 : 1;
     while (true) {
         // Game logic setup
-        std::ifstream input;
+        ifstream input;
         int bRow = 0, bCol = 0;
         int targetsFound = 0;
         int totalTargets = 0;
         char grid[7][7]; // 7x7 grid
+        string username = player.getUsername();
         // Token inventory setup
-        std::map<char, int> tokenInventory;
+        map<char, int> tokenInventory;
         // Open the map.txt file
         input.open(difficulty + choice + ".txt");
         if (!input) {
-            std::cerr << "ERROR: COULD NOT OPEN FILE." << std::endl;
+            cerr << "ERROR: COULD NOT OPEN FILE." << endl;
             return false;
         }
         // Scan the grid and initialize the variables using the GridScanner class
         GridScanner::scanGrid(input, grid, bRow, bCol, totalTargets, tokenInventory);
         input.close(); // Close the input file
         // Print the initial grid using the GridManager class
-        std::cout << "The map from the text file:" << std::endl;
+        cout << "The map from the text file:" << endl;
         GridManager::printGrid(grid);
         player.printLives(); // Print lives
         // Allow the user to place tokens from inventory using the TokenPlacer class
@@ -388,25 +378,28 @@ bool playGame(Player& player, const std::string& difficulty, char choice) {
         Beam::spawnBeamUp(grid, bRow, bCol, targetsFound);
         Beam::spawnBeamDown(grid, bRow, bCol, targetsFound);
         // Print the final grid
-        std::cout << "\nThe result:" << std::endl;
+        cout << "\nThe result:" << endl;
         GridManager::printGrid(grid);
         // Print success message
         if (targetsFound == totalTargets) {
-            std::cout << "Success!" << std::endl;
+            cout << "Success!" << endl;
+            remove((username + "_autosave.txt").c_str());
             int score = player.getLives() * 100;
-            std::cout << "Score: " << score << " pts" << std::endl;
+            cout << "Score: " << score << " pts" << endl;
             player.updateHighestScore(difficultyIndex, levelIndex, score);
-            std::cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << std::endl;
+            cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << endl;
             return true;
         } else {
-            std::cout << "Not all targets were hit!" << std::endl;
+            cout << "Not all targets were hit!" << endl;
             player.loseLife();
+            player.autosave();
             if (player.isOutOfLives()) {
-                std::cout << "You have lost all your lives. Returning to the main menu..." << std::endl;
-                std::cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << std::endl;
+                cout << "You have lost all your lives. Returning to the main menu..." << endl;
+                remove((username + "_autosave.txt").c_str());
+                cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << endl;
                 return false;
             }
-            std::cout << "Try again!\n";
+            cout << "Try again!\n";
         }
     }
 }
