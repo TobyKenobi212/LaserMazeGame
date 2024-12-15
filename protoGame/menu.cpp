@@ -28,6 +28,8 @@ void showMainMenu(Player& player, Leaderboard& leaderboard) {
             cout << "\n";
             break;
         } else {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid option. Please try again.\n";
         }
     }
@@ -53,6 +55,8 @@ void startGame(Player& player) {
         player.resetLives();
         selectLevel(player, "Hard");
     } else {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "Invalid option. Please try again.\n";
         return;
     }
@@ -91,6 +95,8 @@ void selectLevel(Player& player, const string& difficulty) {
                 cout << "You must beat Level 1 first before playing Level 2.\n";
             }
         } else {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid option. Please try again.\n";
         }
     }
@@ -107,6 +113,8 @@ void showLeaderboardMenu(Leaderboard& leaderboard) {
         if (choice == 1) {
             break;
         } else {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid option. Please try again.\n";
         }
     }
