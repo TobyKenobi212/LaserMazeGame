@@ -10,9 +10,9 @@ Status of Development
 | +Lives   | Functionality of lives      | Completed  |
 | +Score   | Functionality of score      | Completed  |
 | +Leave   | Functionality of leaving midgame      | Completed  |
-| +Easy lvl   | Functionality of easy lvls      | WIP  |
-| +Med lvl   | Functionality of med lvls      | WIP  |
-| +Hard lvl   | Functionality of hard lvls      | WIP  |
+| +Easy lvl   | Functionality of easy lvls      | Completed  |
+| +Med lvl   | Functionality of med lvls      | Completed  |
+| +Hard lvl   | Functionality of hard lvls      | Completed  |
 | Saving User Data| saves the data of user from player info to the lvls | Completed |
 | +Level unlocked | Save levels unlocked | Completed |
 | +Grid status | Saves the lives in last played level | Completed |
