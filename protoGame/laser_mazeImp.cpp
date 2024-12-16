@@ -225,6 +225,10 @@ bool placeToken(char grid[7][7], int bRow, int bCol, map<char, int>& tokenInvent
     char token;
     int x, y;
 
+    // Clear leftover input
+    cin.clear();
+    cin.ignore(1000, '\n');
+    
     // Display available tokens
     cout << "\nAvailable tokens: ";
     for (auto& item : tokenInventory) {
