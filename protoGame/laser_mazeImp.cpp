@@ -345,8 +345,8 @@ bool playGame(Player& player, const string& difficulty, char choice, Leaderboard
         string username = player.getUsername();
         // Token inventory setup
         map<char, int> tokenInventory;
-        // Open the map.txt file
-        input.open(difficulty + choice + ".txt");
+        // Open the map.txt file from the levels folder
+        input.open("levels/" + difficulty + choice + ".txt");
         if (!input) {
             cerr << "ERROR: COULD NOT OPEN FILE." << endl;
             return false;
