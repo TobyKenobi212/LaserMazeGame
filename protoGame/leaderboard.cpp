@@ -9,12 +9,13 @@ using namespace std;
 
 void Leaderboard::addPlayer(const Player& player) {
     // Check if the player already exists in the leaderboard
-    for (const auto& p : players) {
+    for (auto& p : players) {
         if (p.getUsername() == player.getUsername()) {
-            return; // Player already exists, no need to add again
+            p = player; // Update existing player data
+            return;
         }
     }
-    players.push_back(player);
+    players.push_back(player); // Add new player
 }
 
 void Leaderboard::displayLeaderboard() const {

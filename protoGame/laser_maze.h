@@ -18,6 +18,7 @@
 #include <limits>
 #include <sstream>
 #include "player.h" // Include the Player header file
+#include "leaderboard.h"
 
 // Utility functions to check the properties of grid cells
 class GridObject {
@@ -122,6 +123,6 @@ bool extractCoordinates(const std::string& input, int& x, int& y);
 bool isInventoryEmpty(const std::map<char, int>& tokenInventory);
 
 // Play level function
-bool playGame(Player& player, const std::string& difficulty, char choice);
+bool playGame(Player& player, const std::string& difficulty, char choice, Leaderboard& leaderboard);
 
 #endif // LASER_MAZE_H

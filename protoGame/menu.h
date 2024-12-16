@@ -12,8 +12,8 @@
 #include "leaderboard.h"
 
 void showMainMenu(Player& player, Leaderboard& leaderboard);
-void startGame(Player& player);
+void startGame(Player& player, Leaderboard& leaderboard);
 void showLeaderboardMenu(Leaderboard& leaderboard);
-void selectLevel(Player& player, const std::string& difficulty);
+void selectLevel(Player& player, const std::string& difficulty, Leaderboard& leaderboard);
 
 #endif // MENU_H
