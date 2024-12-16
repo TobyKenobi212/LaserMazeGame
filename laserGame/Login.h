@@ -1,3 +1,10 @@
+/*
+    Header file containing login class and login prototypes.
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
+*/
+
 #ifndef LOGIN_H
 #define LOGIN_H
 

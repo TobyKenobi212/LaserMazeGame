@@ -2,6 +2,9 @@
     Header file that contains classes for the game logic.
     Function prototypes only.
     Standalone non-class functions also included
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 
 #ifndef LASER_MAZE_H
@@ -15,6 +18,7 @@
 #include <limits>
 #include <sstream>
 #include "player.h" // Include the Player header file
+#include "leaderboard.h"
 
 // Utility functions to check the properties of grid cells
 class GridObject {
@@ -119,6 +123,6 @@ bool extractCoordinates(const std::string& input, int& x, int& y);
 bool isInventoryEmpty(const std::map<char, int>& tokenInventory);
 
 // Play level function
-bool playGame(Player& player, const std::string& difficulty, char choice);
+bool playGame(Player& player, const std::string& difficulty, char choice, Leaderboard& leaderboard);
 
 #endif // LASER_MAZE_H

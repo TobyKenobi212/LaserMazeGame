@@ -1,6 +1,9 @@
 /*
     File containing class method implementation for laser_maze.h
     Also includes some standalone function implementation
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #include "laser_maze.h"
 #include "menu.h"
@@ -329,7 +332,7 @@ bool isInventoryEmpty(const map<char, int>& tokenInventory) {
     return true; // All tokens used
 }
 
-bool playGame(Player& player, const string& difficulty, char choice) {
+bool playGame(Player& player, const string& difficulty, char choice, Leaderboard& leaderboard) {
     int difficultyIndex = (difficulty == "Easy") ? 0 : (difficulty == "Medium") ? 1 : 2;
     int levelIndex = (choice == '1') ? 0 : 1;
     while (true) {
@@ -342,8 +345,8 @@ bool playGame(Player& player, const string& difficulty, char choice) {
         string username = player.getUsername();
         // Token inventory setup
         map<char, int> tokenInventory;
-        // Open the map.txt file
-        input.open(difficulty + choice + ".txt");
+        // Open the map.txt file from the levels folder
+        input.open("levels/" + difficulty + choice + ".txt");
         if (!input) {
             cerr << "ERROR: COULD NOT OPEN FILE." << endl;
             return false;
@@ -379,6 +382,12 @@ bool playGame(Player& player, const string& difficulty, char choice) {
             cout << "Score: " << score << " pts" << endl;
             player.updateHighestScore(difficultyIndex, levelIndex, score);
             cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << endl;
+            // Save player data
+            ofstream out("player_data/" + player.getUsername() + ".txt");
+            out << player; // Save player progress to file
+            out.close();
+            // Update leaderboard
+            leaderboard.addPlayer(player);
             return true;
         } else {
             cout << "Not all targets were hit!" << endl;
@@ -388,6 +397,12 @@ bool playGame(Player& player, const string& difficulty, char choice) {
                 cout << "You have lost all your lives. Returning to the main menu..." << endl;
                 remove(("autosaves/" + username + "_autosave.txt").c_str());
                 cout << "Highest Score Earned: " << player.getHighestScore(difficultyIndex, levelIndex) << " pts" << endl;
+                // Save player data
+                ofstream out("player_data/" + player.getUsername() + ".txt");
+                out << player; // Save player progress to file
+                out.close();
+                // Update leaderboard
+                leaderboard.addPlayer(player);
                 return false;
             }
             cout << "Try again!\n";

@@ -1,16 +1,22 @@
 /*
-    Main file to run the program
+    Main file to run the program.
     Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
     Last updated 12/15/2024
     Version 1.03
 */
+
+#include <limits>
 #include <iostream>
 #include "Login.h"
 #include "menu.h"
 #include "player.h"
+#include "leaderboard.h"
 using namespace std;
 
+void showMainMenu(Player& player, Leaderboard& leaderboard);
+
 int main() {
+    Leaderboard leaderboard;
     LoginManager loginManager;
     ifstream inFile("users.txt");
     if (inFile) {
@@ -28,6 +34,8 @@ int main() {
             cout << "Register a new user\n";
             cin >> user;
             loginManager.registerUser(user.username, user.password);
+            Player player(user.username);
+            leaderboard.addPlayer(player); // Add new player to leaderboard
         } else if (choice == 2) {
             cout << "\nLogin\n";
             cin >> user;
@@ -36,7 +44,7 @@ int main() {
                 cout << "Login successful!\n";
                 Player player(user.username);
                 if (user.username != "dev") {
-                    ifstream playerFile(player.getUsername() + ".txt");
+                    ifstream playerFile("player_data/" + player.getUsername() + ".txt");
                     if (playerFile) {
                         playerFile >> player; // Load player progress from file
                         playerFile.close();
@@ -45,7 +53,8 @@ int main() {
                     // Reset dev account progress
                     player = Player("dev");
                 }
-                showMainMenu(player);
+                leaderboard.addPlayer(player); // Add player to leaderboard
+                showMainMenu(player, leaderboard);
             } else {
                 cout << "Login failed. Please check your username and password.\n";
             }
@@ -55,6 +64,8 @@ int main() {
             outFile.close();
             break;
         } else {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid option. Please try again.\n";
         }
     }

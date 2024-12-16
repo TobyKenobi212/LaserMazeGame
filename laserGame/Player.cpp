@@ -1,5 +1,8 @@
 /*
     File containing class method implementation for Player.h
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #include "player.h"
 using namespace std;
@@ -72,6 +75,16 @@ void Player::updateProgress(int difficulty, int level) {
     if (level > progress[difficulty]) {
         progress[difficulty] = level;
     }
+}
+
+int Player::getTotalHighestScore() const {
+    int totalScore = 0;
+    for (int i = 0; i < 3; ++i) { // For each difficulty
+        for (int j = 0; j < 2; ++j) { // For each level
+            totalScore += highestScores[i][j];
+        }
+    }
+    return totalScore;
 }
 
 // Autosave function

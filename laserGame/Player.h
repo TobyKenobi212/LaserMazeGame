@@ -1,5 +1,8 @@
 /*
     File containing class methods for Player class
+    Author(s): Toby Pham, Tri Nguyen, Benjamin Thai
+    Last updated 12/15/2024
+    Version 1.03
 */
 #ifndef PLAYER_H
 #define PLAYER_H
@@ -31,6 +34,7 @@ public:
     void printLives() const;
     int getHighestScore(int difficulty, int level) const;
     void updateHighestScore(int difficulty, int level, int score);
+    int getTotalHighestScore() const;
     // Autosaving functionality
     void setCurrentLevel(const std::string& level);
     std::string getCurrentLevel() const;
